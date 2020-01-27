@@ -22,14 +22,14 @@ def exit():
 ### Project undo and save ######
 
 def beginUndoGroup():
-    client.call("ak.wwise.core.undo.begingroup")
+    client.call("ak.wwise.core.undo.beginGroup")
 
 def cancelUndoGroup():
-    client.call("ak.wwise.core.undo.cancelgroup")
+    client.call("ak.wwise.core.undo.cancelGroup")
 
 def endUndoGroup(undogroup):
     undoArgs = {"displayName": undogroup}
-    client.call("ak.wwise.core.undo.endgroup", undoArgs)
+    client.call("ak.wwise.core.undo.endGroup", undoArgs)
 
 def saveWwiseProject():
     client.call("ak.wwise.core.project.save")
@@ -104,7 +104,7 @@ def setProperty(object, property, value):
         "value": value
     }
     try:
-        res = client.call("ak.wwise.core.object.setproperty",setPropertyArgs)
+        res = client.call("ak.wwise.core.object.setProperty",setPropertyArgs)
     except Exception as ex:
         print("call error: {}".format(ex))
     else:
@@ -134,11 +134,11 @@ def getSelectedObjects(properties=["id","type", "name", "path"]):
         }
     }
     try:
-        res = client.call("ak.wwise.ui.getselectedobjects",selectedObjectArgs)
+        res = client.call("ak.wwise.ui.getSelectedObjects",selectedObjectArgs)
     except Exception as ex:
         print("call error: {}".format(ex))
     else:
-        return res
+        return res["objects"]
 
 def GetDescendantObjectsOfType(object,type,properties=["id","type", "name", "path"]):
     #print("Get a list of the audio files currently in the project, under the selected object")
@@ -157,7 +157,7 @@ def GetDescendantObjectsOfType(object,type,properties=["id","type", "name", "pat
     except Exception as ex:
         print("call error: {}".format(ex))
     else:
-        return res
+        return res["return"]
 
 
 #####  Soundbanks #####
