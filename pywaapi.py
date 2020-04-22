@@ -5,11 +5,20 @@ sys.path.append('..')
 from waapi import WaapiClient
 from pprint import pprint
 import helpers.soundbank_helper as bankhelper
+import operator
+
+connection = False
 
 
-
-
-client = WaapiClient(url="ws://127.0.0.1:8095/waapi")
+try:
+    client = WaapiClient(url="ws://127.0.0.1:8095/waapi")
+except Exception as ex:
+    print("Connection error: {}".format(ex))
+    print("Error connecting to Wwise. Please check your Waapi settings in User Preferences (wamp port expecting 8095) .....exiting")
+    input('Press <ENTER> to continue')
+    sys.exit()
+else:
+    connection = True
 
 def connect():
     result = client.call("ak.wwise.core.getInfo")
@@ -17,6 +26,7 @@ def connect():
 
 def exit():
     client.disconnect()
+
 ############# Function definitions #########################################
 
 ### Project undo and save ######
@@ -49,7 +59,7 @@ def getProjectInfo():
     except Exception as ex:
         print("call error: {}".format(ex))
     else:
-        return res
+        return res["return"][0]
 
 def getLanguages():
     langlist=[]
@@ -68,6 +78,13 @@ def getLanguages():
             if lang['name'] != 'SFX' and lang['name'] != 'External' and lang['name'] != 'Mixed':
                 langlist.append(lang['name'])
         return langlist
+
+def getPathToWwiseProjectFolder():
+    projectInfo = getProjectInfo()
+    WwiseProjectPath = projectInfo["filePath"]
+    WwiseProjectPath = WwiseProjectPath.replace("Y:", "~").replace('\\', '/')
+    pathToWwiseFolder = os.path.expanduser(os.path.dirname(WwiseProjectPath))
+    return pathToWwiseFolder
 
 ###  Object creation and property setting ######
 
@@ -110,6 +127,33 @@ def setProperty(object, property, value):
     else:
         return res
 
+def setReference(object, reference, value):
+    setArgs = {
+
+        "object": object,
+        "reference": reference,
+        "value": value
+    }
+    try:
+        res = client.call("ak.wwise.core.object.setReference",setArgs)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+    else:
+        return res
+
+def setNotes(object, value):
+    setPropertyArgs = {
+
+        "object": object,
+        "value": value
+    }
+    try:
+        res = client.call("ak.wwise.core.object.setNotes",setPropertyArgs)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+    else:
+        return res
+
 def importAudioFiles(args):
     try:
         res = client.call("ak.wwise.core.audio.import", args)
@@ -117,6 +161,33 @@ def importAudioFiles(args):
         print("call error: {}".format(ex))
     else:
         return res
+
+def setupImportArgs(parentID, fileList,originalsPath,language="SFX"):
+    #print ("Args for audio importing")
+    ParentID = str(parentID)
+    importFilelist = []
+    for audiofile in fileList:
+        foo = audiofile.rsplit('.') #remove extension from filename
+        audiofilename = foo[0]
+        importFilelist.append(
+            {
+                "audioFile": audiofile,
+                "objectPath": "<Sound SFX>"+os.path.basename(audiofilename)
+            }
+        )
+
+    importArgs = {
+        "importOperation": "useExisting",
+        "autoAddToSourceControl": True,
+        "default": {
+            "importLanguage": language,
+            "importLocation": ParentID,
+            "originalsSubFolder": originalsPath
+            },
+        "imports": importFilelist
+        }
+    return importArgs
+
 
 def deleteWwiseObject(object):
     args = {"object":object}
@@ -127,10 +198,11 @@ def deleteWwiseObject(object):
 
 ###  Searching the project  ######
 
-def getSelectedObjects(properties=["id","type", "name", "path"]):
+def getSelectedObjects(properties=[]):
+    baseProperties = ["id","type", "name", "path"]
     selectedObjectArgs = {
         "options": {
-            "return": properties
+            "return": baseProperties+properties
         }
     }
     try:
@@ -138,18 +210,22 @@ def getSelectedObjects(properties=["id","type", "name", "path"]):
     except Exception as ex:
         print("call error: {}".format(ex))
     else:
-        return res["objects"]
+        if res != None:
+            return res["objects"]
+        else:
+            return []
 
-def GetDescendantObjectsOfType(object,type,properties=["id","type", "name", "path"]):
+def getDescendantObjectsOfType(fromObject,ofType,returnProperties=[],tfrom="id",select="descendants"):
     #print("Get a list of the audio files currently in the project, under the selected object")
+    baseProperties = ["id","type", "name", "path"]
     arguments = {
-        "from": {"id": [object]},
+        "from": {tfrom: [fromObject]},
         "transform": [
-            {"select": ["descendants"]},
-            {"where":["type:isIn",[type]]}
+            {"select": [select]},
+            {"where":["type:isIn",[ofType]]}
         ],
         "options": {
-            "return": properties
+            "return": baseProperties+returnProperties
         }
     }
     try:
@@ -157,7 +233,152 @@ def GetDescendantObjectsOfType(object,type,properties=["id","type", "name", "pat
     except Exception as ex:
         print("call error: {}".format(ex))
     else:
-        return res["return"]
+        if res != None:
+            return res["return"]
+        else:
+            return []
+
+def getDescendantObjects(fromObject,returnProperties=[],tfrom="id",select="descendants"):
+    #print("Get a list of the audio files currently in the project, under the selected object")
+    baseProperties = ["id","type", "name", "path"]
+    arguments = {
+        "from": {tfrom: [fromObject]},
+        "transform": [
+            {"select": [select]}
+        ],
+        "options": {
+            "return": baseProperties+returnProperties
+        }
+    }
+    try:
+        res = client.call("ak.wwise.core.object.get", arguments)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+    else:
+        if res != None:
+            return res["return"]
+        else:
+            return []
+
+
+def getObjectsByName(name,type,returnProperties=[],tfrom="name"):
+    #print("Get a list of the audio files currently in the project, under the selected object")
+    baseProperties = ["id","type", "name", "path"]
+    arguments = {
+        "from": {tfrom: [type+":"+name]},
+        "transform": [],
+        "options": {
+            "return": baseProperties+returnProperties
+        }
+    }
+    try:
+        res = client.call("ak.wwise.core.object.get", arguments)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+    else:
+        if res != None:
+            return res["return"]
+        else:
+            return []
+
+def getObjectProperties(fromObject,returnProperties=[],tfrom="id"):
+    #print("Get a list of the audio files currently in the project, under the selected object")
+    baseProperties = ["id","type", "name", "path"]
+    arguments = {
+        "from": {tfrom: [fromObject]},
+        "transform": [],
+        "options": {
+            "return": baseProperties+returnProperties
+        }
+    }
+    try:
+        res = client.call("ak.wwise.core.object.get", arguments)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+    else:
+        if res != None and len(res["return"])>0:
+            if len(res["return"]) > 1:
+                return res["return"]
+            else:
+                return res["return"][0]
+        else:
+            return []
+
+def getAllObjectsOfType(ofType,returnProperties=[]):
+    #print("Get a list of the audio files currently in the project, under the selected object")
+    baseProperties = ["id","type", "name", "path"]
+    arguments = {
+        "from": {"ofType": [ofType]},
+        "transform": [
+            #{"select": "parent"}
+        ],
+        "options": {
+            "return": baseProperties+returnProperties
+        }
+    }
+    try:
+        res = client.call("ak.wwise.core.object.get", arguments)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+    else:
+        if res != None:
+            return res["return"]
+        else:
+            return []
+
+def getReferencesToObject(objectID,returnProperties=[]):
+    #print("Get a list of the audio files currently in the project, under the selected object")
+    baseProperties = ["id","type", "name", "path"]
+    arguments = {
+        "from": {"id": [objectID]},
+        "transform": [
+            {"select": ["referencesTo"]}
+        ],
+        "options": {
+            "return": baseProperties+returnProperties
+        }
+    }
+    try:
+        res = client.call("ak.wwise.core.object.get", arguments)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+    else:
+        if res != None:
+            return res["return"]
+        else:
+            return []
+
+def getListOfTypes():
+    try:
+        res = client.call("ak.wwise.core.object.getTypes")
+    except Exception as ex:
+        print("call error: {}".format(ex))
+    else:
+        return res
+
+def filterWwiseObjects(objects,property,operation, value):
+    results = []
+    op = getOperator(operation)
+    for obj in objects:
+        if not property in obj:## this object doesnt have the property, so skip it
+            continue
+        if op(obj[property],value):
+            results.append(obj)
+    return results
+
+def getOperator(string):
+    if string == "==":
+        return operator.eq
+    elif string == ">":
+        return operator.lt
+    elif string == ">=":
+        return operator.le
+    elif string == "<":
+        return operator.gt
+    elif string == "<=":
+        return operator.ge
+    elif string == "!=":
+        return operator.ne
 
 
 #####  Soundbanks #####
@@ -170,7 +391,7 @@ def generateSoundbanks(banklist = []):
     }
     client.call("ak.wwise.ui.commands.execute", args)
 
-def GetSoundbanks(fromType,fromValue):
+def getSoundbanks(fromType,fromValue):
     # Return all Soundbanks referencing any object of the Work Unit directly
     BankList =[]
     for transform in bankhelper.bankTransforms:
@@ -187,11 +408,79 @@ def GetSoundbanks(fromType,fromValue):
             print("call error: {}".format(ex))
         else:
             # print (res.kwresults["return"])
-            for bank in res.kwresults["return"]:
+            for bank in res["return"]:
                 if bank["name"] not in BankList:
                     BankList.append((bank["name"]))
     return BankList
 
+
+def executeCommand(command,objects = []):
+    args = {
+        "command": command,
+        "objects": [
+            objects
+        ]
+    }
+    res = client.call("ak.wwise.ui.commands.execute", args)
+    return res
+
+def automationMode(enabled):
+    args = {
+        "enable": enabled
+    }
+    res = client.call("ak.wwise.debug.enableAutomationMode", args)
+    return res
+
+def checkoutWorkUnit(workunitID):
+    return executeCommand("WorkgroupCheckoutWWU",workunitID)
+
+def cleanfilePathFromWwise(path):
+    cleanMacpath = path.replace("Y:","~").replace('\\', '/')
+    return os.path.abspath(os.path.expanduser(cleanMacpath))
+
+def setSwitchContainerAssignment(switch,child):
+    args = {
+        "stateOrSwitch": switch,
+        "child":child
+    }
+    res = client.call("ak.wwise.core.switchContainer.addAssignment", args)
+    return res
+
+def removeSwitchContainerAssignment(switch,child):
+    args = {
+        "stateOrSwitch": switch,
+        "child":child
+    }
+    res = client.call("ak.wwise.core.switchContainer.removeAssignment", args)
+    return res
+
+def moveWwiseObject(object,parent, conflict="replace"):
+    args = {
+
+        "object": object,
+        "parent": parent,
+        "onNameConflict": conflict
+    }
+    try:
+        res = client.call("ak.wwise.core.object.move", args)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+    else:
+        return res
+
+def copyWwiseObject(object, parent, conflict="replace"):
+    args = {
+
+        "object": object,
+        "parent": parent,
+        "onNameConflict": conflict
+    }
+    try:
+        res = client.call("ak.wwise.core.object.copy", args)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+    else:
+        return res
 ############## End of Function definitions ##############################################
 
 
