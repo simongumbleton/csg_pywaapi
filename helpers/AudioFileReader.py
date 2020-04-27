@@ -1,5 +1,4 @@
 import soundfile as sf
-import numpy
 
 
 def OpenAudioFile(filename):

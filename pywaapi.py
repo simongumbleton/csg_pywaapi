@@ -16,9 +16,8 @@ def connect(port=8095):
         client = WaapiClient(url="ws://127.0.0.1:{0}/waapi".format(port))
     except Exception as ex:
         print("Connection error: {}".format(ex))
-        print(
-            "Error connecting to Wwise. Please check your Waapi settings in User Preferences (wamp port expecting 8095) .....exiting")
-        input('Press <ENTER> to continue')
+        print("Error connecting to Wwise. Please check your Waapi settings in User Preferences (wamp port expecting 8095) .....exiting")
+        #input('Press <ENTER> to continue')
         return False
         #sys.exit()
     else:

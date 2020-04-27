@@ -1,5 +1,6 @@
 import tkinter
 from tkinter import  messagebox
+from tkinter import filedialog
 import time
 
 
@@ -23,3 +24,13 @@ def showMessageforXseconds(message,timer):
     root.update()
     time.sleep(timer)
     return True
+
+
+def askUserForDirectory():
+    root = tkinter.Tk()
+    root.withdraw()
+    root.update()
+    dir = filedialog.askdirectory(title="Choose source directory")
+    root.update()
+    root.destroy()
+    return dir

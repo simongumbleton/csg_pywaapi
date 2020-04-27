@@ -8,6 +8,8 @@ pprint("................")
 
 result = pywaapi.connect()
 pprint(result)
+if not result:
+    exit()
 
 
 ##### Pause the script to display results ###### 

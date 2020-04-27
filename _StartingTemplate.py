@@ -6,6 +6,8 @@ from pprint import pprint
 
 #Connect to Wwise
 result = pywaapi.connect()
+if not result:
+    exit()
 
 #Setup an undo group
 pywaapi.beginUndoGroup()
