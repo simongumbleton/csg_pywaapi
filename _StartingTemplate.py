@@ -4,7 +4,7 @@ from pprint import pprint
 
 
 
-#Check connection to Wwise
+#Connect to Wwise
 result = pywaapi.connect()
 
 #Setup an undo group
