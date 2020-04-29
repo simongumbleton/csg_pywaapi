@@ -1,16 +1,16 @@
-import pywaapi
+import csg_pywaapi
 import sys
 from pprint import pprint
 
 
 
 #Connect to Wwise
-result = pywaapi.connect()
+result = csg_pywaapi.connect()
 if not result:
     exit()
 
 #Setup an undo group
-pywaapi.beginUndoGroup()
+csg_pywaapi.beginUndoGroup()
 
 #If run from cmd/bat/wwise then usually IDs will be passed into the args
 ids = []
@@ -21,7 +21,7 @@ if (len(sys.argv) > 1):
 
 #if no args are given, then get the currently selected objects instead
 if not ids:
-    res = pywaapi.getSelectedObjects()
+    res = csg_pywaapi.getSelectedObjects()
     for obj in res:
         ids.append(obj["id"])
 
@@ -33,10 +33,10 @@ for id in ids:
 
 
 # Close the undo groupr
-pywaapi.endUndoGroup("MyUndoGroup")
+csg_pywaapi.endUndoGroup("MyUndoGroup")
 
 ##### Pause the script to display results ###### 
 input('Press <ENTER> to continue')
 
 # Exit
-pywaapi.exit()
+csg_pywaapi.exit()

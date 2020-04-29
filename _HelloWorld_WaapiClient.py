@@ -1,4 +1,4 @@
-import pywaapi
+import csg_pywaapi
 from pprint import pprint
 
 pprint("................")
@@ -6,7 +6,7 @@ pprint("Hello fellow sound warrior!")
 pprint("Here is your current Wwise connection!")
 pprint("................")
 
-result = pywaapi.connect()
+result = csg_pywaapi.connect()
 pprint(result)
 if not result:
     exit()
@@ -15,4 +15,4 @@ if not result:
 ##### Pause the script to display results ###### 
 input('Press <ENTER> to continue')
 
-pywaapi.exit()
+csg_pywaapi.exit()
