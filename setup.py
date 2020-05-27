@@ -7,26 +7,20 @@ def readme():
 
 
 setup(
-    name="weather-reporter",
-    version="1.0.1",
-    description="A Python package to get weather reports for any location.",
+    name="csg_pywaapi",
+    version="0.0.2",
+    description="Helper package for interfacing with Wwise using waapi.",
     long_description=readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/nikhilkumarsingh/weather-reporter",
-    author="Nikhil Kumar Singh",
-    author_email="nikhilksingh97@gmail.com",
+    url="https://github.com/simongumbleton/csg_pywaapi",
+    author="Simon Gumbleton",
+    author_email="simongumbleton@gmail.com",
     license="MIT",
     classifiers=[
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3"
     ],
-    packages=["weather_reporter"],
+    packages=["csg_pywaapi","csg_pywaapi/helpers"],
     include_package_data=True,
-    install_requires=["requests"],
-    entry_points={
-        "console_scripts": [
-            "weather-reporter=weather_reporter.cli:main",
-        ]
-    },
+    install_requires=["waapi_client"],
 )

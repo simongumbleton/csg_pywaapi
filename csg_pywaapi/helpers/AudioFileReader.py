@@ -1,16 +1,16 @@
-import soundfile as sf
-
+import wave as wv
 
 def OpenAudioFile(filename):
-    audiofile = sf.SoundFile(filename)
+    #audiofile = sf.SoundFile(filename)
+    audiofile = wv.open(filename,"rb")
     return audiofile
 
 def GetChannels(filename):
     audiofile = OpenAudioFile(filename)
-    return audiofile.channels
+    return audiofile.getnchannels()
 
 def GetSamplerate(filename):
     audiofile = OpenAudioFile(filename)
-    return audiofile.samplerate
+    return audiofile.getframerate()
 
 
