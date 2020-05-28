@@ -4,7 +4,7 @@ sys.path.append('..')
 
 from waapi import WaapiClient
 from pprint import pprint
-import helpers.soundbank_helper as bankhelper
+from csg_helpers import soundbank_helper
 import operator
 
 client = None
@@ -461,7 +461,8 @@ def generateSoundbanks(banklist = []):
 def getSoundbanks(fromType,fromValue):
     """ Return all Soundbanks referencing any object of the Work Unit directly"""
     BankList =[]
-    for transform in bankhelper.bankTransforms:
+    for transform in soundbank_helper.bankTransforms:
+    #for transform in bankhelper.bankTransforms:
         arguments = {
             "from": {fromType: [fromValue]},
             "transform": transform,
