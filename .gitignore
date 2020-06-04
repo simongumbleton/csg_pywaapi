@@ -11,3 +11,4 @@ csg_pywaapi/build/
 csg_pywaapi/csg_pywaapi.egg-info/
 csg_pywaapi/csg_helpers/_pycache_/
 *.pyc
+csg_pywaapi/.eggs/
