@@ -1,6 +1,7 @@
 import tkinter
 from tkinter import  messagebox
 from tkinter import filedialog
+from tkinter import *
 import time
 
 
@@ -34,3 +35,28 @@ def askUserForDirectory():
     root.update()
     root.destroy()
     return dir
+
+
+def askUserForDropDownSelection(message,options):
+    retVariable = ""
+    def GetVariable():
+        global retVariable
+        retVariable = variable.get()
+        print(retVariable)
+        root.destroy()
+
+    root = Tk()
+    root.geometry("400x400")
+
+    choices = ['GB', 'MB', 'KB']
+    variable = StringVar(root)
+    variable.set('GB')
+
+    w = OptionMenu(root, variable, *choices)
+    w.pack();
+    button = Button(root,text="Get",command=GetVariable).pack()
+    root.mainloop()
+
+    print("Returning")
+    print(retVariable)
+    return retVariable

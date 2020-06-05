@@ -316,12 +316,15 @@ def getDescendantObjects(fromObject,returnProperties=[],tfrom="id",select="desce
             return []
 
 
-def getObjectsByName(name,type,returnProperties=[],tfrom="name"):
+def getObjectsByName(name,type,returnProperties=[],tfrom="ofType"):
     """Run a query to find by name. Need to include a type in the query"""
     baseProperties = ["id","type", "name", "path"]
     arguments = {
-        "from": {tfrom: [type+":"+name]},
-        "transform": [],
+        "from": {tfrom: [type]},
+        "transform": [
+            #{"where": ["name:matches",[name]]}
+            {"where": ['name:matches', '^'+name+'$']}
+        ],
         "options": {
             "return": baseProperties+returnProperties
         }
@@ -417,7 +420,7 @@ def getListOfTypes():
     else:
         return res
 
-def filterWwiseObjects(objects,property,operation, value):
+def filterWwiseObjects(objects,property,operation, value, NOT=0):
     """helper function to filter a list of objects by a specific property, value and comparison operation"""
     # e.g. return only objects with "@Volume" , "<" , "-48"
     results = []
@@ -425,8 +428,12 @@ def filterWwiseObjects(objects,property,operation, value):
     for obj in objects:
         if not property in obj:## this object doesnt have the property, so skip it
             continue
-        if op(obj[property],value):
-            results.append(obj)
+        if NOT ==0:
+            if op(obj[property],value):
+                results.append(obj)
+        else:
+            if not op(obj[property],value):
+                results.append(obj)
     return results
 
 def getOperator(string):
@@ -442,6 +449,11 @@ def getOperator(string):
         return operator.ge
     elif string == "!=":
         return operator.ne
+    elif string == "contains":
+        return operator.contains
+    else:
+        print("WARNING!!! Did not recognise operator argument..defaulting to EQUALS")
+        return operator.eq
 
 
 #####  Soundbanks #####
@@ -461,8 +473,7 @@ def generateSoundbanks(banklist = []):
 def getSoundbanks(fromType,fromValue):
     """ Return all Soundbanks referencing any object of the Work Unit directly"""
     BankList =[]
-    for transform in soundbank_helper.bankTransforms:
-    #for transform in bankhelper.bankTransforms:
+    for transform in bankhelper.bankTransforms:
         arguments = {
             "from": {fromType: [fromValue]},
             "transform": transform,
