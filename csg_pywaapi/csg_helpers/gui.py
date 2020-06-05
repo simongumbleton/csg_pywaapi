@@ -38,25 +38,21 @@ def askUserForDirectory():
 
 
 def askUserForDropDownSelection(message,options):
-    retVariable = ""
+    retVariable = []
     def GetVariable():
-        global retVariable
-        retVariable = variable.get()
+        #global retVariable
+        retVariable.append(variable.get())
         print(retVariable)
         root.destroy()
-
     root = Tk()
-    root.geometry("400x400")
-
-    choices = ['GB', 'MB', 'KB']
+    root.title(message)
+    root.geometry("300x200")
+    choices = options
     variable = StringVar(root)
-    variable.set('GB')
-
+    variable.set(options[0])
     w = OptionMenu(root, variable, *choices)
     w.pack();
-    button = Button(root,text="Get",command=GetVariable).pack()
+    button = Button(root,text="Ok",command=GetVariable).pack()
     root.mainloop()
-
-    print("Returning")
-    print(retVariable)
     return retVariable
+
