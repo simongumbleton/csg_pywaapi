@@ -26,6 +26,7 @@ def connect(port=8095):
 
 def exit():
     """Exiting the connection"""
+    automationMode(False)
     try:
         client.disconnect()
     except Exception as ex:
@@ -591,6 +592,7 @@ def copyWwiseObject(object, parent, conflict="replace"):
         return False
     else:
         return res
+
 ############## End of Function definitions ##############################################
 
 #If pywaapi is run as the main script, connect and print result
