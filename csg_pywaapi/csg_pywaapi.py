@@ -13,11 +13,8 @@ def connect(port=8095):
     """ Connect to Wwise authoring api , on default port 8095 or an alternative port.
     This sets up the client used for all future calls in the same session, so should be called before any other functions
 
-    args:
-    port -- the waapi port to use (default 8095)
-
-    return:
-    wwise connection info structure OR False
+    :param port: The waapi port to use (default 8095)
+    :return: wwise connection info structure OR False
 
     """
     global client
@@ -684,7 +681,13 @@ def executeCommand(command,objects = []):
         return res
 
 def automationMode(enabled):
-    """set automation mode on/off"""
+    """set automation mode on/off
+
+    :param enabled: True or False
+
+    :return: Result
+
+    """
     args = {
         "enable": enabled
     }
