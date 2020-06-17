@@ -10,7 +10,16 @@ import operator
 client = None
 
 def connect(port=8095):
-    """Initial call to wwise, returns the project info or False"""
+    """ Connect to Wwise authoring api , on default port 8095 or an alternative port.
+    This sets up the client used for all future calls in the same session, so should be called before any other functions
+
+    args:
+    port -- the waapi port to use (default 8095)
+
+    return:
+    wwise connection info structure OR False
+
+    """
     global client
     try:
         client = WaapiClient(url="ws://127.0.0.1:{0}/waapi".format(port))
@@ -25,7 +34,9 @@ def connect(port=8095):
         return result
 
 def exit():
-    """Exiting the connection"""
+    """Exiting the connection
+
+    """
     automationMode(False)
     try:
         client.disconnect()
@@ -34,10 +45,15 @@ def exit():
         return False
 
 def getClient():
+    """Getter for the waapi client connection
+
+    """
     return client
 
 def call(procedure,arguments):
-    """Support manually calling a procedure with args"""
+    """Support manually calling a procedure with args
+
+    """
     try:
         res = client.call(procedure,arguments)
     except Exception as ex:
@@ -51,6 +67,9 @@ def call(procedure,arguments):
 ### Project undo and save ######
 
 def beginUndoGroup():
+    """Begin an undo group
+
+    """
     try:
         client.call("ak.wwise.core.undo.beginGroup")
     except Exception as ex:
@@ -58,6 +77,9 @@ def beginUndoGroup():
         return False
 
 def cancelUndoGroup():
+    """Cancel an undo group
+
+        """
     try:
         client.call("ak.wwise.core.undo.cancelGroup")
     except Exception as ex:
@@ -65,7 +87,11 @@ def cancelUndoGroup():
         return False
 
 def endUndoGroup(undogroup):
-    """undogroup is the name of the group of actions"""
+    """Name and end an undo group
+    args:
+    undogroup -- Name to give the undo group that is ending
+
+    """
     undoArgs = {"displayName": undogroup}
     try:
         client.call("ak.wwise.core.undo.endGroup", undoArgs)
@@ -74,6 +100,9 @@ def endUndoGroup(undogroup):
         return False
 
 def saveWwiseProject():
+    """Save the wwise project
+
+    """
     try:
         client.call("ak.wwise.core.project.save")
     except Exception as ex:
@@ -81,7 +110,9 @@ def saveWwiseProject():
         return False
 
 def setupSubscription(subscription, target, returnArgs = ["id", "name", "path"]):
-    """Subscribe to an event. Do target when triggered, get retunArgs in"""
+    """Subscribe to an event. Do target when triggered, get retunArgs in
+
+    """
     try:
         client.subscribe(subscription, target, {"return": returnArgs})
     except Exception as ex:
@@ -89,6 +120,10 @@ def setupSubscription(subscription, target, returnArgs = ["id", "name", "path"])
         return False
 
 def getProjectInfo():
+    """Get the wwise project info
+    e.g. filePath, @DefaultLanguage
+
+    """
     arguments = {
         "from": {"ofType": ["Project"]},
         "options": {
@@ -104,6 +139,9 @@ def getProjectInfo():
         return res["return"][0]
 
 def getLanguages():
+    """Get the list of languages from the wwise project
+
+    """
     langlist=[]
     arguments = {
         "from": {"ofType": ["Language"]},
@@ -123,7 +161,9 @@ def getLanguages():
         return langlist
 
 def getPathToWwiseProjectFolder():
-    """Gets a path to the root folder of wwise project"""
+    """Gets a path to the root folder of wwise project, cleans any nonsense from Mac paths.
+
+    """
     projectInfo = getProjectInfo()
     WwiseProjectPath = projectInfo["filePath"]
     WwiseProjectPath = WwiseProjectPath.replace("Y:", "~").replace('\\', '/')
@@ -134,7 +174,18 @@ def getPathToWwiseProjectFolder():
 
 
 def createWwiseObject(parentID, otype="BlendContainer", oname="", conflict="merge"):
-    """Create an object of type otype, called oname, underneath parentID"""
+    """Create a wwise object of type otype, called oname, underneath
+
+    args:
+    parentID -- The GUID of the parent object
+    otype -- The type of wwise object to create
+    oname -- The name to give the new object
+    conflict -- Behaviour for conflicting objects (default=merge)
+
+    returns:
+    The newly created wwise object structure or False
+
+    """
     createObjArgs = {
         "parent": parentID,
         "type": otype,
@@ -150,7 +201,16 @@ def createWwiseObject(parentID, otype="BlendContainer", oname="", conflict="merg
         return res
 
 def createWwiseObjectFromArgs(args = {}):
-    """Create with custom args"""
+    """Create a wwise object from a custom argument structure.
+    Useful if you need to create many complex objects.
+
+    args:
+    args{} -- A map of custom arguments for ak.wwise.core.object.create
+
+    returns:
+    The newly created wwise object(s) or False
+
+    """
     try:
         res = client.call("ak.wwise.core.object.create", args)
     except Exception as ex:
@@ -160,7 +220,17 @@ def createWwiseObjectFromArgs(args = {}):
         return res
 
 def setProperty(object, property, value):
-    """Set property to value for object"""
+    """Set a property of a wwise object
+
+    args;
+    object -- GUID of the object
+    property -- Name of the property to set
+    value -- The value to set for given property
+
+    returns:
+    The result of the operation
+
+    """
     setPropertyArgs = {
         "object": object,
         "property": property,
@@ -175,7 +245,17 @@ def setProperty(object, property, value):
         return res
 
 def setReference(object, reference, value):
-    """Set reference to value for object"""
+    """Set a reference of a wwise object
+
+    args;
+    object -- GUID of the object
+    reference -- Name of the reference to set
+    value -- The value to set for given property
+
+    returns:
+    The result of the operation
+
+    """
     setArgs = {
         "object": object,
         "reference": reference,
@@ -190,7 +270,13 @@ def setReference(object, reference, value):
         return res
 
 def setNotes(object, value):
-    """Set the notes of object to value"""
+    """Set the notes of object to value
+
+    args:
+    object -- GUID of the object
+    value -- String to set as notes
+
+    """
     setPropertyArgs = {
         "object": object,
         "value": value
@@ -204,7 +290,14 @@ def setNotes(object, value):
         return res
 
 def importAudioFiles(args):
-    """Import with custom args"""
+    """Import audio files with custom args
+    args:
+    args{} -- A map of custom arguments for ak.wwise.core.audio.import
+
+    returns:
+    The newly created imported object(s) or False
+
+    """
     try:
         res = client.call("ak.wwise.core.audio.import", args)
     except Exception as ex:
@@ -214,7 +307,18 @@ def importAudioFiles(args):
         return res
 
 def setupImportArgs(parentID, fileList,originalsPath,language="SFX"):
-    """Construct args for import"""
+    """Helper function to construct args for import operation
+
+    args:
+    parentID -- GUID of the parent object
+    fileList -- List of audio files to import
+    originalsPath -- Relative location to put new files inside Originals
+    language -- Import audio as SFX (default) or a given language
+
+    returns:
+    An arguments structure that can be used with importAudioFiles()
+
+    """
     ParentID = str(parentID)
     importFilelist = []
     for audiofile in fileList:
@@ -241,6 +345,12 @@ def setupImportArgs(parentID, fileList,originalsPath,language="SFX"):
 
 
 def deleteWwiseObject(object):
+    """Delete a wwise object
+
+    args:
+    object -- GUID of object to be deleted
+
+    """
     args = {"object":object}
     try:
         client.call("ak.wwise.core.object.delete",args)
@@ -251,7 +361,16 @@ def deleteWwiseObject(object):
 ###  Searching the project  ######
 
 def getSelectedObjects(properties=[]):
-    """Get currently selected object, return any extra properties"""
+    """Get the currently selected object(s), returning any extra properties
+
+    args:
+    properties[] -- list of additional properties to be returned for the wwise objects.
+    by default objects will return ["id","type", "name", "path"] + properties[]
+
+    returns:
+    List of currently selected wwise objects or False
+
+    """
     baseProperties = ["id","type", "name", "path"]
     selectedObjectArgs = {
         "options": {
@@ -270,7 +389,20 @@ def getSelectedObjects(properties=[]):
             return []
 
 def getDescendantObjectsOfType(fromObject,ofType,returnProperties=[],tfrom="id",select="descendants"):
-    """Perform a search fromObject to find descendants ofType. Optionally change the from and select parts of the query, by default use ID as the object"""
+    """Perform a search fromObject to find descendants ofType, return additional properties for each object.
+    Optionally change the from and select parts of the query, by default use ID as the object
+
+    args:
+    fromObject -- starting point of search. Default is a GUID
+    ofType -- Type of wwise objects to search for
+    returnProperties -- Additional properties to return for each object
+    tfrom -- Key that determines how fromObject is used in the search (default=id)
+    select -- Key that determines which objects are searched in relation to the fromObject (default=descendants)
+
+    for more info on options see Wwise SDK for ak.wwise.core.object.get
+    https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
+
+    """
     baseProperties = ["id","type", "name", "path"]
     arguments = {
         "from": {tfrom: [fromObject]},
@@ -294,7 +426,19 @@ def getDescendantObjectsOfType(fromObject,ofType,returnProperties=[],tfrom="id",
             return []
 
 def getDescendantObjects(fromObject,returnProperties=[],tfrom="id",select="descendants"):
-    """start fromObject, return all descendants (or optionally something else), by default use ID as the object"""
+    """Perform a search fromObject to find all descendants, return additional properties for each object.
+    Optionally change the from and select parts of the query, by default use ID as the object
+
+    args:
+    fromObject -- starting point of search. Default is a GUID
+    returnProperties -- Additional properties to return for each object
+    tfrom -- Key that determines how fromObject is used in the search (default=id)
+    select -- Key that determines which objects are searched in relation to the fromObject (default=descendants)
+
+    for more info on options see Wwise SDK for ak.wwise.core.object.get
+    https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
+
+    """
     baseProperties = ["id","type", "name", "path"]
     arguments = {
         "from": {tfrom: [fromObject]},
@@ -318,7 +462,19 @@ def getDescendantObjects(fromObject,returnProperties=[],tfrom="id",select="desce
 
 
 def getObjectsByName(name,type,returnProperties=[],tfrom="ofType"):
-    """Run a query to find by name. Need to include a type in the query"""
+    """Perform a search by name, return additional properties for each object.
+    Named search must also include a type filter
+
+    args:
+    name -- String to match with object names
+    type -- Type of wwise objects to search for
+    returnProperties -- Additional properties to return for each object
+    tfrom -- Key that determines how fromObject is used in the search (default=ofType)
+
+    for more info on options see Wwise SDK for ak.wwise.core.object.get
+    https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
+
+    """
     baseProperties = ["id","type", "name", "path"]
     arguments = {
         "from": {tfrom: [type]},
@@ -342,7 +498,17 @@ def getObjectsByName(name,type,returnProperties=[],tfrom="ofType"):
             return []
 
 def getObjectProperties(fromObject,returnProperties=[],tfrom="id"):
-    """get some additional properties fromObject, by default use ID as the object"""
+    """Get some additional properties from a wwise Object, by default use ID as the object
+
+    args:
+    fromObject --  Wwise object to get properties from. Default is a GUID
+    returnProperties -- Additional properties to return for each object
+    tfrom -- Key that determines how fromObject is used in the search (default=id)
+
+    for more info on options see Wwise SDK for ak.wwise.core.object.get
+    https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
+
+    """
     baseProperties = ["id","type", "name", "path"]
     arguments = {
         "from": {tfrom: [fromObject]},
@@ -366,7 +532,13 @@ def getObjectProperties(fromObject,returnProperties=[],tfrom="id"):
             return []
 
 def getAllObjectsOfType(ofType,returnProperties=[]):
-    """get all objects of a certain type"""
+    """Get all objects of a certain type, and return any extra properties
+
+    args:
+    ofType -- Type of wwise objects to search for
+    returnProperties -- Additional return properties to get for each object
+
+    """
     baseProperties = ["id","type", "name", "path"]
     arguments = {
         "from": {"ofType": [ofType]},
