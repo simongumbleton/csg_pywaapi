@@ -8,3 +8,6 @@ API
 
 csg_pywaapi functions and use guide
 
+.. automodule:: csg_pywaapi
+   :members:
+
