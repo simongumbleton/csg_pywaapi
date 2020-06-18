@@ -8,3 +8,27 @@ QuickStart
 
 Lets look at a few short examples of getting started using the module
 
+============
+Part title..
+============
+***************
+Chapter title..
+***************
+Section title..
+===============
+Subsubsection title..
+^^^^^^^^^^^^^^^^^^^^^
+Paragrapth title..
+""""""""""""""""""
+Paragrapth title..
+******************
+    Hello
+    
+.. code-block:: python
+   :emphasize-lines: 3,5
+
+   def some_function():
+       interesting = False
+       print 'This line is highlighted.'
+       print 'This one is not...'
+       print '...but this one is.'
