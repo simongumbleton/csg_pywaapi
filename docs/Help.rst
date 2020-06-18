@@ -8,3 +8,29 @@ Help
 
 Need help using the module? Contact:
 
+
+============
+Part title..
+============
+Part Title
+
+***************
+Chapter title..
+***************
+Chapter..
+
+Section title..
+===============
+Section..
+
+Subsubsection title..
+^^^^^^^^^^^^^^^^^^^^^
+subsection
+
+Paragrapth title..
+""""""""""""""""""
+Paragraph..
+
+Paragrapth title..
+******************
+Hello

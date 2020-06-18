@@ -8,31 +8,35 @@ QuickStart
 
 Lets look at a few short examples of getting started using the module
 
-============
-Part title..
-============
-Part Title
 
-***************
-Chapter title..
-***************
-Chapter..
-
-Section title..
+Instalation and Setup
 ===============
-Section..
+Instalation and setup..
 
-Subsubsection title..
-^^^^^^^^^^^^^^^^^^^^^
-subsection
 
-Paragrapth title..
-""""""""""""""""""
-Paragraph..
 
-Paragrapth title..
-******************
-Hello
+Getting Started
+===============
+Getting Started..
+
+.. code-block:: python
+   :emphasize-lines: 3,5
+
+   def some_function():
+       interesting = False
+       print 'This line is highlighted.'
+       print 'This one is not...'
+       print '...but this one is.'
+
+
+Further Examples
+===============
+Further examples.
+
+***************
+Example 01
+***************
+Example 01..
 
 .. code-block:: python
    :emphasize-lines: 3,5
