@@ -9,7 +9,7 @@ QuickStart
 Lets look at a few short examples of getting started using the module
 
 
-Instalation and Setup
+Installation and Setup
 ===============
 The module requires Python 3.6 or later.
 If required, install the latest version of Python 3 from:
@@ -26,24 +26,24 @@ Getting Started
 ===============
 To use the module, simply import as follows;
 
-.. 	code-block:: python
+.. code-block:: python
    	import csg_pywaapi
 
 To connect to the Wwise authoring tool, call the connect() method. 
 
-.. 	code-block:: python
+.. code-block:: python
    	result = csg_pywaapi.connect()
 
 This will initiate a connection to the wwise authoring tool on port 8095 by default. You can specify an alternative port by passing a value into connect() e.g.
 
-.. 	code-block:: python
+.. code-block:: python
 	result = csg_pywaapi.connect(8080)
 
 If the connection is successful, then connect() will return a result structure containing useful information about the wwise connection, tool and project. If it fails, the return value will be bool False.
 
 You may wish to include pretty print in your scripts if you want to print or log nicely formated structures such those returned by the Wwise Authoring API. e.g.
 
-.. 	code-block:: python
+.. code-block:: python
 	from pprint import pprint
 	result = csg_pywaapi.connect()
 	pprint(result)
