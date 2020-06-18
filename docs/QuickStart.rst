@@ -11,19 +11,29 @@ Lets look at a few short examples of getting started using the module
 ============
 Part title..
 ============
+Part Title
+
 ***************
 Chapter title..
 ***************
+Chapter..
+
 Section title..
 ===============
+Section..
+
 Subsubsection title..
 ^^^^^^^^^^^^^^^^^^^^^
+subsection
+
 Paragrapth title..
 """"""""""""""""""
+Paragraph..
+
 Paragrapth title..
 ******************
-    Hello
-    
+Hello
+
 .. code-block:: python
    :emphasize-lines: 3,5
 
