@@ -19,10 +19,6 @@ Chapter title..
 ***************
 Chapter..
 
-Section title..
-===============
-Section..
-
 Subsubsection title..
 ^^^^^^^^^^^^^^^^^^^^^
 subsection
