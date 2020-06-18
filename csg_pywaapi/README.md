@@ -13,3 +13,6 @@ Connect to Wwise and get the connection info...
 Default port is 8095, Optionally pass in an alternative port for the connection ...
 "result = csg_pywaapi.connect(8080)" 
 
+Documentation:
+https://csg-pywaapi.readthedocs.io/en/latest/
+
