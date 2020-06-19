@@ -31,7 +31,7 @@ def connect(port=8095):
         return result
 
 def exit():
-    """Exiting the connection
+    """Exiting the connection. Also clears automation mode
 
     """
     automationMode(False)
@@ -48,7 +48,12 @@ def getClient():
     return client
 
 def call(procedure,arguments):
-    """Support manually calling a procedure with args
+    """Support manually calling a wwapi procedure with custom arguments
+
+    :param procedure: The name of the waapi procedure to call
+    :param arguments: The argument map to pass to procedure
+
+    :return: Result structure or False
 
     """
     try:
@@ -85,8 +90,8 @@ def cancelUndoGroup():
 
 def endUndoGroup(undogroup):
     """Name and end an undo group
-    args:
-    undogroup -- Name to give the undo group that is ending
+
+    :param undogroup: Name to give the undo group that is ending
 
     """
     undoArgs = {"displayName": undogroup}
@@ -107,7 +112,11 @@ def saveWwiseProject():
         return False
 
 def setupSubscription(subscription, target, returnArgs = ["id", "name", "path"]):
-    """Subscribe to an event. Do target when triggered, get retunArgs in
+    """Subscribe to an event. Define a target to call when triggered, get the retunArgs back
+
+    :param subscription: Waapi subscription topic
+    :param target: The function to run on the callback trigger
+    :param returnArgs: Properties to return with the callback
 
     """
     try:
@@ -117,8 +126,7 @@ def setupSubscription(subscription, target, returnArgs = ["id", "name", "path"])
         return False
 
 def getProjectInfo():
-    """Get the wwise project info
-    e.g. filePath, @DefaultLanguage
+    """Get the wwise project info e.g. filePath, @DefaultLanguage
 
     """
     arguments = {
@@ -167,20 +175,17 @@ def getPathToWwiseProjectFolder():
     pathToWwiseFolder = os.path.expanduser(os.path.dirname(WwiseProjectPath))
     return pathToWwiseFolder
 
+
 ###  Object creation and property setting ######
-
-
 def createWwiseObject(parentID, otype="BlendContainer", oname="", conflict="merge"):
     """Create a wwise object of type otype, called oname, underneath
 
-    args:
-    parentID -- The GUID of the parent object
-    otype -- The type of wwise object to create
-    oname -- The name to give the new object
-    conflict -- Behaviour for conflicting objects (default=merge)
+    :param parentID: The GUID of the parent object
+    :param otype: The type of wwise object to create
+    :param oname: The name to give the new object
+    :param conflict: Behaviour for conflicting objects (default=merge)
 
-    returns:
-    The newly created wwise object structure or False
+    :return: The newly created wwise object structure or False
 
     """
     createObjArgs = {
@@ -201,11 +206,8 @@ def createWwiseObjectFromArgs(args = {}):
     """Create a wwise object from a custom argument structure.
     Useful if you need to create many complex objects.
 
-    args:
-    args{} -- A map of custom arguments for ak.wwise.core.object.create
-
-    returns:
-    The newly created wwise object(s) or False
+    :param args: A map of custom arguments for ak.wwise.core.object.create
+    :return: The newly created wwise object(s) or False
 
     """
     try:
@@ -219,13 +221,10 @@ def createWwiseObjectFromArgs(args = {}):
 def setProperty(object, property, value):
     """Set a property of a wwise object
 
-    args;
-    object -- GUID of the object
-    property -- Name of the property to set
-    value -- The value to set for given property
-
-    returns:
-    The result of the operation
+    :param object: GUID of the object
+    :param property: Name of the property to set
+    :param value: The value to set for given property
+    :return: Result structure or False
 
     """
     setPropertyArgs = {
@@ -244,13 +243,10 @@ def setProperty(object, property, value):
 def setReference(object, reference, value):
     """Set a reference of a wwise object
 
-    args;
-    object -- GUID of the object
-    reference -- Name of the reference to set
-    value -- The value to set for given property
-
-    returns:
-    The result of the operation
+    :param object: GUID of the object
+    :param reference: Name of the reference to set
+    :param value: The value to set for given property
+    :return: Result structure or False
 
     """
     setArgs = {
@@ -269,9 +265,9 @@ def setReference(object, reference, value):
 def setNotes(object, value):
     """Set the notes of object to value
 
-    args:
-    object -- GUID of the object
-    value -- String to set as notes
+    :param object: GUID of the object
+    :param value: String to set as notes
+    :return: Result structure or False
 
     """
     setPropertyArgs = {
@@ -288,11 +284,9 @@ def setNotes(object, value):
 
 def importAudioFiles(args):
     """Import audio files with custom args
-    args:
-    args{} -- A map of custom arguments for ak.wwise.core.audio.import
 
-    returns:
-    The newly created imported object(s) or False
+    :param args: A map of custom arguments for ak.wwise.core.audio.import
+    :return: Result structure or False
 
     """
     try:
@@ -306,14 +300,11 @@ def importAudioFiles(args):
 def setupImportArgs(parentID, fileList,originalsPath,language="SFX"):
     """Helper function to construct args for import operation
 
-    args:
-    parentID -- GUID of the parent object
-    fileList -- List of audio files to import
-    originalsPath -- Relative location to put new files inside Originals
-    language -- Import audio as SFX (default) or a given language
-
-    returns:
-    An arguments structure that can be used with importAudioFiles()
+    :param parentID: GUID of the parent object
+    :param fileList: List of audio files to import
+    :param originalsPath: Relative location to put new files inside Originals
+    :param language: Import audio as SFX (default) or a given language
+    :return: Result structure or False
 
     """
     ParentID = str(parentID)
@@ -344,8 +335,8 @@ def setupImportArgs(parentID, fileList,originalsPath,language="SFX"):
 def deleteWwiseObject(object):
     """Delete a wwise object
 
-    args:
-    object -- GUID of object to be deleted
+    :param object: GUID of object to be deleted
+    :return: Result structure or False
 
     """
     args = {"object":object}
@@ -360,12 +351,9 @@ def deleteWwiseObject(object):
 def getSelectedObjects(properties=[]):
     """Get the currently selected object(s), returning any extra properties
 
-    args:
-    properties[] -- list of additional properties to be returned for the wwise objects.
+    :param properties: list of additional properties to be returned for the wwise objects.
     by default objects will return ["id","type", "name", "path"] + properties[]
-
-    returns:
-    List of currently selected wwise objects or False
+    :return: Result structure or False
 
     """
     baseProperties = ["id","type", "name", "path"]
@@ -388,16 +376,15 @@ def getSelectedObjects(properties=[]):
 def getDescendantObjectsOfType(fromObject,ofType,returnProperties=[],tfrom="id",select="descendants"):
     """Perform a search fromObject to find descendants ofType, return additional properties for each object.
     Optionally change the from and select parts of the query, by default use ID as the object
-
-    args:
-    fromObject -- starting point of search. Default is a GUID
-    ofType -- Type of wwise objects to search for
-    returnProperties -- Additional properties to return for each object
-    tfrom -- Key that determines how fromObject is used in the search (default=id)
-    select -- Key that determines which objects are searched in relation to the fromObject (default=descendants)
-
     for more info on options see Wwise SDK for ak.wwise.core.object.get
     https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
+
+    :param fromObject: Starting point of search. Default is a GUID
+    :param ofType: Type of wwise objects to search for
+    :param returnProperties: Additional properties to return for each object
+    :param tfrom: Key that determines how fromObject is used in the search (default=id)
+    :param select: Key that determines which objects are searched in relation to the fromObject (default=descendants)
+    :return: Result structure or False
 
     """
     baseProperties = ["id","type", "name", "path"]
@@ -685,7 +672,7 @@ def automationMode(enabled):
 
     :param enabled: True or False
 
-    :return: Result
+    :return: Result struct or False
 
     """
     args = {
