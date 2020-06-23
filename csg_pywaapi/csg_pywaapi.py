@@ -48,7 +48,7 @@ def getClient():
     return client
 
 def call(procedure,arguments):
-    """Support manually calling a wwapi procedure with custom arguments
+    """Support manually calling a waapi procedure with custom arguments
 
     :param procedure: The name of the waapi procedure to call
     :param arguments: The argument map to pass to procedure
