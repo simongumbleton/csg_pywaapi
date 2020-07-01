@@ -125,14 +125,14 @@ def setupSubscription(subscription, target, returnArgs = ["id", "name", "path"])
         print("call error: {}".format(ex))
         return False
 
-def getProjectInfo():
-    """Get the wwise project info e.g. filePath, @DefaultLanguage
+def getProjectInfo(ret=[]):
+    """Get the wwise project info by default returns filePath, @DefaultLanguage
 
     """
     arguments = {
         "from": {"ofType": ["Project"]},
         "options": {
-            "return": ["type","id", "name", "filePath","@DefaultLanguage"]
+            "return": ["type","id", "name", "filePath","@DefaultLanguage"]+ret
         }
     }
     try:
@@ -413,11 +413,11 @@ def getDescendantObjects(fromObject,returnProperties=[],tfrom="id",select="desce
     """Perform a search fromObject to find all descendants, return additional properties for each object.
     Optionally change the from and select parts of the query, by default use ID as the object
 
-    args:
-    fromObject -- starting point of search. Default is a GUID
-    returnProperties -- Additional properties to return for each object
-    tfrom -- Key that determines how fromObject is used in the search (default=id)
-    select -- Key that determines which objects are searched in relation to the fromObject (default=descendants)
+    :param fromObject: Starting point of search.
+    :param returnProperties: Additional properties to return for each object
+    :param tfrom: Key that determines how fromObject is used in the search (default=id)
+    :param select: Key that determines which objects are searched in relation to the fromObject (default=descendants)
+    :return: Result structure or False
 
     for more info on options see Wwise SDK for ak.wwise.core.object.get
     https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
@@ -449,11 +449,11 @@ def getObjectsByName(name,type,returnProperties=[],tfrom="ofType"):
     """Perform a search by name, return additional properties for each object.
     Named search must also include a type filter
 
-    args:
-    name -- String to match with object names
-    type -- Type of wwise objects to search for
-    returnProperties -- Additional properties to return for each object
-    tfrom -- Key that determines how fromObject is used in the search (default=ofType)
+    :param name: String to match with object names
+    :param type: Type of wwise objects to search for
+    :param returnProperties: Additional properties to return for each object
+    :param tfrom: Key that determines how fromObject is used in the search (default=ofType)
+    :return: Result structure or False
 
     for more info on options see Wwise SDK for ak.wwise.core.object.get
     https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
@@ -484,11 +484,10 @@ def getObjectsByName(name,type,returnProperties=[],tfrom="ofType"):
 def getObjectProperties(fromObject,returnProperties=[],tfrom="id"):
     """Get some additional properties from a wwise Object, by default use ID as the object
 
-    args:
-    fromObject --  Wwise object to get properties from. Default is a GUID
-    returnProperties -- Additional properties to return for each object
-    tfrom -- Key that determines how fromObject is used in the search (default=id)
-
+    :param fromObject: Wwise object to get properties from. Default is a GUID
+    :param returnProperties: Additional properties to return for each object
+    :param tfrom: Key that determines how fromObject is used in the search (default=id)
+    :return: Result structure or False
     for more info on options see Wwise SDK for ak.wwise.core.object.get
     https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
 
@@ -518,9 +517,9 @@ def getObjectProperties(fromObject,returnProperties=[],tfrom="id"):
 def getAllObjectsOfType(ofType,returnProperties=[]):
     """Get all objects of a certain type, and return any extra properties
 
-    args:
-    ofType -- Type of wwise objects to search for
-    returnProperties -- Additional return properties to get for each object
+    :param ofType: Type of wwise objects to search for
+    :param returnProperties: Additional return properties to get for each object
+    :return: Result structure or False
 
     """
     baseProperties = ["id","type", "name", "path"]
@@ -545,7 +544,14 @@ def getAllObjectsOfType(ofType,returnProperties=[]):
             return []
 
 def getReferencesToObject(objectID,returnProperties=[],tfrom="id"):
-    """ get the references to a given object, by default use ID as the object"""
+    """ get the references to a given object, by default use ID as the object
+
+    :param fromObject: Wwise object to get references to. Default is a GUID
+    :param returnProperties: Additional properties to return for each object
+    :param tfrom: Key that determines how fromObject is used in the search (default=id)
+    :return: Results structure or False
+
+    """
     baseProperties = ["id","type", "name", "path"]
     arguments = {
         "from": {tfrom: [objectID]},
@@ -578,8 +584,14 @@ def getListOfTypes():
         return res
 
 def filterWwiseObjects(objects,property,operation, value, NOT=0):
-    """helper function to filter a list of objects by a specific property, value and comparison operation"""
+    """helper function to filter a list of objects by a specific property, value and comparison operation
     # e.g. return only objects with "@Volume" , "<" , "-48"
+
+    :param objects: List of wwise objects to filter
+    :param property: Which property to filter by
+    :param operation: String comparison operator for filter. One of; "==","<","<=",">",">=","!=","contains"
+    :return: List of objects matching filters
+    """
     results = []
     op = getOperator(operation)
     for obj in objects:
@@ -594,6 +606,7 @@ def filterWwiseObjects(objects,property,operation, value, NOT=0):
     return results
 
 def getOperator(string):
+    """Helper function to convert string comparison to python operator"""
     if string == "==":
         return operator.eq
     elif string == "<":
@@ -615,6 +628,9 @@ def getOperator(string):
 
 #####  Soundbanks #####
 def generateSoundbanks(banklist = []):
+    """Generate soundbanks
+    :param banklist: List of bank names to generate
+    """
     args = {
         "command": "GenerateSelectedSoundbanksAllPlatforms",
         "objects": [
@@ -627,12 +643,16 @@ def generateSoundbanks(banklist = []):
         print("call error: {}".format(ex))
         return False
 
-def getSoundbanks(fromType,fromValue):
-    """ Return all Soundbanks referencing any object of the Work Unit directly"""
+def getSoundbanks(tfrom,obj):
+    """ Return all Soundbanks referencing any object of the Work Unit directly
+    :param tfrom: Key that determines how obj is used in the search (default=id)
+    :param obj: The object to use in the search
+    :return: List of banks directly referencing obj
+    """
     BankList =[]
-    for transform in bankhelper.bankTransforms:
+    for transform in soundbank_helper.bankTransforms:
         arguments = {
-            "from": {fromType: [fromValue]},
+            "from": {tfrom: [obj]},
             "transform": transform,
             "options": {
                 "return": ['id', 'name', 'type']
@@ -652,7 +672,13 @@ def getSoundbanks(fromType,fromValue):
 
 
 def executeCommand(command,objects = []):
-    """wrapper to execute UI commands"""
+    """wrapper to execute UI commands
+    See https://www.audiokinetic.com/library/2017.1.9_6501/?source=SDK&id=globalcommandsids.html
+
+    :param command: Command to execute
+    :param objects: List of objects to pass to the command
+    :return: Result structure or False
+    """
     args = {
         "command": command,
         "objects": [
@@ -687,16 +713,26 @@ def automationMode(enabled):
         return res
 
 def checkoutWorkUnit(workunitID):
-    """Source control operation to check out work unit"""
+    """Source control operation to check out work unit
+    :param workunitID: GUID of the work unit to checkout
+    :return: Result structure or False
+    """
     return executeCommand("WorkgroupCheckoutWWU",workunitID)
 
 def cleanfilePathFromWwise(path):
-    """Cleans the nonsense from Mac paths that Wwise gives you"""
+    """Cleans the undesired characters from Mac paths that Wwise gives you
+    :param path: path to clean (e.g. wproj or work unit path)
+    :return: Cleaned path
+    """
     cleanMacpath = path.replace("Y:","~").replace('\\', '/')
     return os.path.abspath(os.path.expanduser(cleanMacpath))
 
 def setSwitchContainerAssignment(switch,child):
-    """Assign a given child object to a given switch (switch container)"""
+    """Assign a given child object to a given switch (switch container)
+    :param switch: Name of the switch to assign child to
+    :param child: ID of the wwise object to assign to switch
+    :return: Result structure or False
+    """
     args = {
         "stateOrSwitch": switch,
         "child":child
@@ -710,7 +746,11 @@ def setSwitchContainerAssignment(switch,child):
         return res
 
 def removeSwitchContainerAssignment(switch,child):
-    """Remove a given child object from a given switch (switch container)"""
+    """Remove a given child object from a given switch (switch container)
+    :param switch: Name of the switch to assign child to
+    :param child: ID of the wwise object to assign to switch
+    :return: Result structure or False
+    """
     args = {
         "stateOrSwitch": switch,
         "child":child
@@ -724,7 +764,13 @@ def removeSwitchContainerAssignment(switch,child):
         return res
 
 def moveWwiseObject(object,parent, conflict="replace"):
-    """move object to new location under parent"""
+    """move object to new location under parent
+    :param object: ID of wwise object to move
+    :param parent: ID of the parent to move object under
+    :param conflict: Behaviour for conflicting objects (default = replace)
+    :return: Result structure or False
+
+    """
     args = {
 
         "object": object,
@@ -740,7 +786,12 @@ def moveWwiseObject(object,parent, conflict="replace"):
         return res
 
 def copyWwiseObject(object, parent, conflict="replace"):
-    """copy object to new location under parent"""
+    """copy object to new location under parent
+    :param object: ID of wwise object to copy
+    :param parent: ID of the parent to paste object under
+    :param conflict: Behaviour for conflicting objects (default = replace)
+    :return: Result structure or False
+    """
     args = {
 
         "object": object,
