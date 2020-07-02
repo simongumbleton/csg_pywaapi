@@ -629,6 +629,7 @@ def getOperator(string):
 #####  Soundbanks #####
 def generateSoundbanks(banklist = []):
     """Generate soundbanks
+
     :param banklist: List of bank names to generate
     """
     args = {
@@ -645,6 +646,7 @@ def generateSoundbanks(banklist = []):
 
 def getSoundbanks(tfrom,obj):
     """ Return all Soundbanks referencing any object of the Work Unit directly
+
     :param tfrom: Key that determines how obj is used in the search (default=id)
     :param obj: The object to use in the search
     :return: List of banks directly referencing obj
@@ -714,6 +716,7 @@ def automationMode(enabled):
 
 def checkoutWorkUnit(workunitID):
     """Source control operation to check out work unit
+
     :param workunitID: GUID of the work unit to checkout
     :return: Result structure or False
     """
@@ -721,6 +724,7 @@ def checkoutWorkUnit(workunitID):
 
 def cleanfilePathFromWwise(path):
     """Cleans the undesired characters from Mac paths that Wwise gives you
+
     :param path: path to clean (e.g. wproj or work unit path)
     :return: Cleaned path
     """
@@ -729,6 +733,7 @@ def cleanfilePathFromWwise(path):
 
 def setSwitchContainerAssignment(switch,child):
     """Assign a given child object to a given switch (switch container)
+
     :param switch: Name of the switch to assign child to
     :param child: ID of the wwise object to assign to switch
     :return: Result structure or False
@@ -747,6 +752,7 @@ def setSwitchContainerAssignment(switch,child):
 
 def removeSwitchContainerAssignment(switch,child):
     """Remove a given child object from a given switch (switch container)
+
     :param switch: Name of the switch to assign child to
     :param child: ID of the wwise object to assign to switch
     :return: Result structure or False
@@ -765,6 +771,7 @@ def removeSwitchContainerAssignment(switch,child):
 
 def moveWwiseObject(object,parent, conflict="replace"):
     """move object to new location under parent
+
     :param object: ID of wwise object to move
     :param parent: ID of the parent to move object under
     :param conflict: Behaviour for conflicting objects (default = replace)
@@ -787,6 +794,7 @@ def moveWwiseObject(object,parent, conflict="replace"):
 
 def copyWwiseObject(object, parent, conflict="replace"):
     """copy object to new location under parent
+    
     :param object: ID of wwise object to copy
     :param parent: ID of the parent to paste object under
     :param conflict: Behaviour for conflicting objects (default = replace)
