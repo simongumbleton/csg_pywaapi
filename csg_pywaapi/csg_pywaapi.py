@@ -128,6 +128,8 @@ def setupSubscription(subscription, target, returnArgs = ["id", "name", "path"])
 def getProjectInfo(ret=[]):
     """Get the wwise project info by default returns filePath, @DefaultLanguage
 
+    :param ret: List of additional properties to return from the project (optional)
+
     """
     arguments = {
         "from": {"ofType": ["Project"]},
@@ -349,10 +351,10 @@ def deleteWwiseObject(object):
 ###  Searching the project  ######
 
 def getSelectedObjects(properties=[]):
-    """Get the currently selected object(s), returning any extra properties
+    """Get the currently selected object(s), returning any extra properties.
+    By default objects will return ["id","type", "name", "path"] + properties[]
 
     :param properties: list of additional properties to be returned for the wwise objects.
-    by default objects will return ["id","type", "name", "path"] + properties[]
     :return: Result structure or False
 
     """
@@ -447,16 +449,15 @@ def getDescendantObjects(fromObject,returnProperties=[],tfrom="id",select="desce
 
 def getObjectsByName(name,type,returnProperties=[],tfrom="ofType"):
     """Perform a search by name, return additional properties for each object.
-    Named search must also include a type filter
+    Named search must also include a type filter.
+    For more info on options see Wwise SDK for ak.wwise.core.object.get
+    https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
 
     :param name: String to match with object names
     :param type: Type of wwise objects to search for
     :param returnProperties: Additional properties to return for each object
     :param tfrom: Key that determines how fromObject is used in the search (default=ofType)
     :return: Result structure or False
-
-    for more info on options see Wwise SDK for ak.wwise.core.object.get
-    https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
 
     """
     baseProperties = ["id","type", "name", "path"]
