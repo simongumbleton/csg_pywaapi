@@ -73,20 +73,24 @@ def beginUndoGroup():
 
     """
     try:
-        client.call("ak.wwise.core.undo.beginGroup")
+        res = client.call("ak.wwise.core.undo.beginGroup")
     except Exception as ex:
         print("call error: {}".format(ex))
         return False
+    else:
+        return res
 
 def cancelUndoGroup():
     """Cancel an undo group
 
         """
     try:
-        client.call("ak.wwise.core.undo.cancelGroup")
+        res = client.call("ak.wwise.core.undo.cancelGroup")
     except Exception as ex:
         print("call error: {}".format(ex))
         return False
+    else:
+        return res
 
 def endUndoGroup(undogroup):
     """Name and end an undo group
@@ -96,20 +100,24 @@ def endUndoGroup(undogroup):
     """
     undoArgs = {"displayName": undogroup}
     try:
-        client.call("ak.wwise.core.undo.endGroup", undoArgs)
+        res = client.call("ak.wwise.core.undo.endGroup", undoArgs)
     except Exception as ex:
         print("call error: {}".format(ex))
         return False
+    else:
+        return res
 
 def saveWwiseProject():
     """Save the wwise project
 
     """
     try:
-        client.call("ak.wwise.core.project.save")
+        res = client.call("ak.wwise.core.project.save")
     except Exception as ex:
         print("call error: {}".format(ex))
         return False
+    else:
+        return res
 
 def setupSubscription(subscription, target, returnArgs = ["id", "name", "path"]):
     """Subscribe to an event. Define a target to call when triggered, get the retunArgs back
@@ -120,21 +128,24 @@ def setupSubscription(subscription, target, returnArgs = ["id", "name", "path"])
 
     """
     try:
-        client.subscribe(subscription, target, {"return": returnArgs})
+        res = client.subscribe(subscription, target, {"return": returnArgs})
     except Exception as ex:
         print("call error: {}".format(ex))
         return False
+    else:
+        return res
 
-def getProjectInfo(ret=[]):
+def getProjectInfo(additionalProperties=[]):
     """Get the wwise project info by default returns filePath, @DefaultLanguage
 
-    :param ret: List of additional properties to return from the project (optional)
+    :param additionalProperties: List of additional properties to return from the project (optional)
+    :return: Results structure or False
 
     """
     arguments = {
         "from": {"ofType": ["Project"]},
         "options": {
-            "return": ["type","id", "name", "filePath","@DefaultLanguage"]+ret
+            "return": ["type","id", "name", "filePath","@DefaultLanguage"]+additionalProperties
         }
     }
     try:
@@ -147,6 +158,8 @@ def getProjectInfo(ret=[]):
 
 def getLanguages():
     """Get the list of languages from the wwise project
+
+    :return: List of languages
 
     """
     langlist=[]
@@ -169,6 +182,8 @@ def getLanguages():
 
 def getPathToWwiseProjectFolder():
     """Gets a path to the root folder of wwise project, cleans any nonsense from Mac paths.
+
+    :return: os.path formated path to the wwise folder on disk
 
     """
     projectInfo = getProjectInfo()
@@ -306,7 +321,7 @@ def setupImportArgs(parentID, fileList,originalsPath,language="SFX"):
     :param fileList: List of audio files to import
     :param originalsPath: Relative location to put new files inside Originals
     :param language: Import audio as SFX (default) or a given language
-    :return: Result structure or False
+    :return: An arguments structure ready to be passed into importAudioFiles()
 
     """
     ParentID = str(parentID)
@@ -343,10 +358,12 @@ def deleteWwiseObject(object):
     """
     args = {"object":object}
     try:
-        client.call("ak.wwise.core.object.delete",args)
+        res = client.call("ak.wwise.core.object.delete",args)
     except Exception as ex:
         print("call error: {}".format(ex))
         return False
+    else:
+        return res
 
 ###  Searching the project  ######
 
@@ -640,10 +657,12 @@ def generateSoundbanks(banklist = []):
         ]
     }
     try:
-        client.call("ak.wwise.ui.commands.execute", args)
+        res = client.call("ak.wwise.ui.commands.execute", args)
     except Exception as ex:
         print("call error: {}".format(ex))
         return False
+    else:
+        return res
 
 def getSoundbanks(tfrom,obj):
     """ Return all Soundbanks referencing any object of the Work Unit directly
@@ -724,10 +743,10 @@ def checkoutWorkUnit(workunitID):
     return executeCommand("WorkgroupCheckoutWWU",workunitID)
 
 def cleanfilePathFromWwise(path):
-    """Cleans the undesired characters from Mac paths that Wwise gives you
+    """Cleans the undesired characters from Mac paths that Wwise gives you. E.g. replaces Y: with ~
 
     :param path: path to clean (e.g. wproj or work unit path)
-    :return: Cleaned path
+    :return: os.path formated path, cleaned of Mac/WINE characters
     """
     cleanMacpath = path.replace("Y:","~").replace('\\', '/')
     return os.path.abspath(os.path.expanduser(cleanMacpath))

@@ -58,20 +58,3 @@ You may wish to include pretty print in your scripts if you want to print or log
 Make sure to enable the Wwise Authoring API in the Wwise tool user preferences, and make sure to set the WAMP port to the value you want to use. For details see..
 (https://www.audiokinetic.com/library/edge/?source=SDK&id=waapi.html)
 
-Further Examples
-===============
-Further examples.
-
-***************
-Example 01
-***************
-Example 01..
-
-.. code-block:: python
-   :emphasize-lines: 3,5
-
-   def some_function():
-       interesting = False
-       print 'This line is highlighted.'
-       print 'This one is not...'
-       print '...but this one is.'
