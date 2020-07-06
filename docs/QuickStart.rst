@@ -6,7 +6,7 @@
 QuickStart
 =======================================
 
-Lets look at a few short examples of getting started using the module
+How to install and get started using the module. Further examples are included in the examples section.
 
 
 Installation and Setup
