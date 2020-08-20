@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name="csg_pywaapi",
-    version="1.0.3",
+    version="1.0.4",
     description="Helper package for interfacing with Wwise using waapi.",
     long_description=readme(),
     long_description_content_type="text/markdown",
