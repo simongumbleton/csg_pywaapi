@@ -175,7 +175,7 @@ def getLanguages():
         print("call error: {}".format(ex))
         return False
     else:
-        for lang in res.kwresults["return"]:
+        for lang in res["return"]:
             if lang['name'] != 'SFX' and lang['name'] != 'External' and lang['name'] != 'Mixed':
                 langlist.append(lang['name'])
         return langlist
