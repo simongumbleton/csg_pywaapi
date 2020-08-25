@@ -812,6 +812,27 @@ def moveWwiseObject(object,parent, conflict="replace"):
     else:
         return res
 
+def renameWwiseObject(object,newName):
+    """Rename a given object with newName
+
+    :param object: ID of wwise object to rename
+    :param newName: The new name of the wwise object
+    :return: Result structure or False
+
+    """
+    args = {
+
+        "object": object,
+        "value": newName
+    }
+    try:
+        res = client.call("ak.wwise.core.object.setName", args)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+        return False
+    else:
+        return res
+
 def copyWwiseObject(object, parent, conflict="replace"):
     """copy object to new location under parent
     
