@@ -329,13 +329,18 @@ def setupImportArgs(parentID, fileList,originalsPath,language="SFX"):
     """
     ParentID = str(parentID)
     importFilelist = []
+    if language != "SFX":
+        type = "<Sound Voice>"
+    else:
+        type = "<Sound SFX>"
+
     for audiofile in fileList:
         foo = audiofile.rsplit('.') #remove extension from filename
         audiofilename = foo[0]
         importFilelist.append(
             {
                 "audioFile": audiofile,
-                "objectPath": "<Sound SFX>"+os.path.basename(audiofilename)
+                "objectPath": type + os.path.basename(audiofilename)
             }
         )
 
