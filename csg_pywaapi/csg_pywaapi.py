@@ -154,7 +154,7 @@ def getProjectInfo(additionalProperties=[]):
         print("call error: {}".format(ex))
         return False
     else:
-        if res["return"][0]:
+        if len(res["return"]) > 0:
             return res["return"][0]
         else:
             return False
@@ -531,7 +531,7 @@ def getObjectProperties(fromObject,returnProperties=[],tfrom="id"):
             if len(res["return"]) > 1:
                 return res["return"]
             else:
-                if res["return"][0]:
+                if len(res["return"]) > 0:
                     return res["return"][0]
                 else:
                     return False
