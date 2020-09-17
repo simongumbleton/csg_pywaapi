@@ -154,7 +154,10 @@ def getProjectInfo(additionalProperties=[]):
         print("call error: {}".format(ex))
         return False
     else:
-        return res["return"][0]
+        if res["return"][0]:
+            return res["return"][0]
+        else:
+            return False
 
 def getLanguages():
     """Get the list of languages from the wwise project
@@ -528,7 +531,10 @@ def getObjectProperties(fromObject,returnProperties=[],tfrom="id"):
             if len(res["return"]) > 1:
                 return res["return"]
             else:
-                return res["return"][0]
+                if res["return"][0]:
+                    return res["return"][0]
+                else:
+                    return False
         else:
             return []
 
