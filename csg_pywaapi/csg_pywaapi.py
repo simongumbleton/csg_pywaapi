@@ -1,5 +1,7 @@
 import sys
 import os
+import re
+
 sys.path.append('..')
 
 from waapi import WaapiClient
@@ -8,6 +10,8 @@ from csg_helpers import soundbank_helper
 import operator
 
 client = None
+
+IDRegExPattern = r"^\{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}\}$"
 
 def connect(port=8095):
     """ Connect to Wwise authoring api , on default port 8095 or an alternative port.
@@ -507,6 +511,35 @@ def getObjectsByName(name,type,returnProperties=[],tfrom="ofType"):
         else:
             return []
 
+def searchForObject(searchterm,returnProperties=[],tfrom="search"):
+    """Perform a search by name, return additional properties for each object.
+    For more info on options see Wwise SDK for ak.wwise.core.object.get
+    https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
+
+    :param searchterm: String to search for
+    :param returnProperties: Additional properties to return for each object
+    :param tfrom: Type of search to do, defaults to "search" can be overridden to use path
+    :return: Result structure or False
+
+    """
+    baseProperties = ["id","type", "name", "path"]
+    arguments = {
+        "from": {tfrom: [searchterm]},
+        "options": {
+            "return": baseProperties+returnProperties
+        }
+    }
+    try:
+        res = client.call("ak.wwise.core.object.get", arguments)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+        return False
+    else:
+        if res != None:
+            return res["return"]
+        else:
+            return []
+
 def getObjectProperties(fromObject,returnProperties=[],tfrom="id"):
     """Get some additional properties from a wwise Object, by default use ID as the object
 
@@ -865,6 +898,96 @@ def copyWwiseObject(object, parent, conflict="replace"):
         return False
     else:
         return res
+
+def isStringValidID(string):
+    result = re.fullmatch(IDRegExPattern,string)
+    if result:
+        return True
+    else:
+        return False
+
+def createStructureFromPath(path,parent):
+    """Create a structure of objects from a string path
+
+    :param path: String path of the structure to be created. Objects should be seperated by \\ and type should prefix name in <> e.g <WorkUnit>MyWorkUnit
+    :param parent: ID or path of the parent object to create the structure under e.g. "\\Actor-Mixer Hierarchy"
+    :return: The last descendent object in the path created
+
+    e.g. res = csg_pywaapi.createStructureFromPath("<WorkUnit>Hello\\<Folder>World","\\Actor-Mixer Hierarchy")
+    """
+    if not parent or not path:
+        print("Error. Missing arguments")
+        return False
+
+
+    isParentID = isStringValidID(parent)
+    if not isParentID:
+        #the parent param was not an ID, lets try to find it in the wwise project
+        results = searchForObject(parent,[],"path")
+        numOfResults = len(results)
+        if numOfResults == 1:
+            nextParent = results[0]["id"]
+        elif numOfResults == 0:
+            print("Could not locate parent in wwise project. Arg given = "+parent)
+            return False
+        elif numOfResults > 1:
+            print("Ambiguous parent argument. More than one possible parent found using arg: "+parent)
+            print("Consider refining the argument or passing an explicit ID instead")
+            return False
+    else:
+        result = searchForObject(parent,[],"id")
+        if result:
+            nextParent = parent
+        else:
+            print("Error. Cannot find an object with matching ID from parent argument")
+            return False
+
+
+    lastChild = None
+    pathlist = path.split("\\")
+    for node in pathlist:
+        if node == "":
+            continue #skip empty nodes
+
+        #get the name and type from the node
+        type = ""
+        name = ""
+        if "<" in node:
+            type = node.split(">")[0]
+            type = type.replace("<", "")
+            name = node.split(">")[1]
+        else:
+            type = None
+            name = node
+
+        # check if there is already a child with the name under the parent
+        res = getDescendantObjects(nextParent,[],"id","children")
+        for item in res:
+            if item["name"] == name:
+                #node already exists in wwise
+                nextParent = item["id"]
+                lastChild = item
+                break
+        else:
+            if type:    #node contains a type, and we didn't find an existing item so we try to create it
+                res = createWwiseObject(nextParent,type,name)
+                if res:
+                    nextParent = res["id"]
+                    lastChild = res
+                else:   #object was not created
+                    print("Error! Could not create object and found no existing object named "+name+" underneath " + parent)
+                    return False
+            else:
+                print("Error! Could not create object and found no existing object named "+name+" underneath " + parent)
+                return False
+
+    if lastChild:
+        return lastChild
+    else:
+        return False
+
+
+
 
 ############## End of Function definitions ##############################################
 
