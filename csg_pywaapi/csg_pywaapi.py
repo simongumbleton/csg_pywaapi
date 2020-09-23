@@ -11,7 +11,7 @@ import operator
 
 client = None
 
-IDRegExPattern = r"^\{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}\}$"
+
 
 def connect(port=8095):
     """ Connect to Wwise authoring api , on default port 8095 or an alternative port.
@@ -900,6 +900,13 @@ def copyWwiseObject(object, parent, conflict="replace"):
         return res
 
 def isStringValidID(string):
+    """Check if a given string is formatted as a valid ID, using regex fullmatch with pattern - ^\{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}\}$
+
+    :param string: The string to match against the regex ID pattern
+    :return: True if string matches the pattern of a wwise ID, otherwise  False
+
+    """
+    IDRegExPattern = r"^\{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}\}$"
     result = re.fullmatch(IDRegExPattern,string)
     if result:
         return True
