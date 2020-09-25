@@ -1,1 +1,3 @@
 waapi_client==0.2b1
+PyWave
+

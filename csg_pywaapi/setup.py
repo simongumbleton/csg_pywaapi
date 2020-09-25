@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name="csg_pywaapi",
-    version="1.1.1",
+    version="1.1.2",
     description="Helper package for interfacing with Wwise using waapi.",
     long_description=readme(),
     long_description_content_type="text/markdown",
@@ -24,5 +24,5 @@ setup(
     packages=["csg_helpers"],
     py_modules=['csg_pywaapi'],
     include_package_data=True,
-    install_requires=["waapi_client"],
+    install_requires=["waapi_client","PyWave"],
 )
