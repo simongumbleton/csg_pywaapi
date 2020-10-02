@@ -242,12 +242,13 @@ def createWwiseObjectFromArgs(args = {}):
     else:
         return res
 
-def setProperty(object, property, value):
+def setProperty(object, property, value,platform=None):
     """Set a property of a wwise object
 
     :param object: GUID of the object
     :param property: Name of the property to set
     :param value: The value to set for given property
+    :param platform: Optional. The platform to apply the property for
     :return: Result structure or False
 
     """
@@ -256,6 +257,10 @@ def setProperty(object, property, value):
         "property": property,
         "value": value
     }
+    if platform:
+        setPropertyArgs.append(
+            {"platform":platform}
+        )
     try:
         res = client.call("ak.wwise.core.object.setProperty",setPropertyArgs)
     except Exception as ex:
@@ -264,12 +269,13 @@ def setProperty(object, property, value):
     else:
         return res
 
-def setReference(object, reference, value):
+def setReference(object, reference, value,platform=None):
     """Set a reference of a wwise object
 
     :param object: GUID of the object
     :param reference: Name of the reference to set
     :param value: The value to set for given property
+    :param platform: Optional. The platform to apply the reference for
     :return: Result structure or False
 
     """
@@ -278,6 +284,10 @@ def setReference(object, reference, value):
         "reference": reference,
         "value": value
     }
+    if platform:
+        setArgs.append(
+            {"platform": platform}
+        )
     try:
         res = client.call("ak.wwise.core.object.setReference",setArgs)
     except Exception as ex:
