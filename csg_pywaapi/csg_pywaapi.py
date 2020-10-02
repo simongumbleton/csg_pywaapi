@@ -258,9 +258,7 @@ def setProperty(object, property, value,platform=None):
         "value": value
     }
     if platform:
-        setPropertyArgs.append(
-            {"platform":platform}
-        )
+        setPropertyArgs["platform"]=platform
     try:
         res = client.call("ak.wwise.core.object.setProperty",setPropertyArgs)
     except Exception as ex:
@@ -285,9 +283,7 @@ def setReference(object, reference, value,platform=None):
         "value": value
     }
     if platform:
-        setArgs.append(
-            {"platform": platform}
-        )
+        setArgs["platform"]=platform
     try:
         res = client.call("ak.wwise.core.object.setReference",setArgs)
     except Exception as ex:
