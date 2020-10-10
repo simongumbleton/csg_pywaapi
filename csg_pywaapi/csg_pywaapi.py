@@ -920,9 +920,9 @@ def isStringValidID(string):
         return False
 
 def createStructureFromPath(path,parent):
-    """Create a structure of objects from a string path
+    r"""Create a structure of objects from a string path
 
-    :param path: String path of the structure to be created. Objects should be seperated by '\\' and type should prefix name in <> e.g <WorkUnit>MyWorkUnit
+    :param path: String path of the structure to be created. Objects should be seperated by "\\" and type should prefix name in <> e.g <WorkUnit>MyWorkUnit
     :param parent: ID or path of the parent object to create the structure under e.g. "\\Actor-Mixer Hierarchy"
     :return: The last descendent object in the path created
 
