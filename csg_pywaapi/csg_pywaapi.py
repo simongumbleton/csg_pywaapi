@@ -370,7 +370,7 @@ def setupImportArgs(parentID, fileList,originalsPath,language="SFX"):
 def deleteWwiseObject(objectID):
     """Delete a wwise object
 
-    :param object: GUID of object to be deleted
+    :param objectID: GUID of object to be deleted
     :return: Result structure or False
 
     """
@@ -842,7 +842,7 @@ def removeSwitchContainerAssignment(switch,child):
 def moveWwiseObject(objectID,parent, conflict="replace"):
     """move object to new location under parent
 
-    :param object: ID of wwise object to move
+    :param objectID: ID of wwise object to move
     :param parent: ID of the parent to move object under
     :param conflict: Behaviour for conflicting objects (default = replace)
     :return: Result structure or False
@@ -865,7 +865,7 @@ def moveWwiseObject(objectID,parent, conflict="replace"):
 def renameWwiseObject(objectID,newName):
     """Rename a given object with newName
 
-    :param object: ID of wwise object to rename
+    :param objectID: ID of wwise object to rename
     :param newName: The new name of the wwise object
     :return: Result structure or False
 
@@ -886,7 +886,7 @@ def renameWwiseObject(objectID,newName):
 def copyWwiseObject(objectID, parent, conflict="replace"):
     """copy object to new location under parent
     
-    :param object: ID of wwise object to copy
+    :param objectID: ID of wwise object to copy
     :param parent: ID of the parent to paste object under
     :param conflict: Behaviour for conflicting objects (default = replace)
     :return: Result structure or False
