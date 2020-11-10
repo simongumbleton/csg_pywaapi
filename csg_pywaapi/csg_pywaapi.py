@@ -242,10 +242,10 @@ def createWwiseObjectFromArgs(args = {}):
     else:
         return res
 
-def setProperty(object, property, value,platform=None):
+def setProperty(objectID, property, value,platform=None):
     """Set a property of a wwise object
 
-    :param object: GUID of the object
+    :param objectID: GUID of the object
     :param property: Name of the property to set
     :param value: The value to set for given property
     :param platform: Optional. The platform to apply the property for
@@ -253,7 +253,7 @@ def setProperty(object, property, value,platform=None):
 
     """
     setPropertyArgs = {
-        "object": object,
+        "object": objectID,
         "property": property,
         "value": value
     }
@@ -267,10 +267,10 @@ def setProperty(object, property, value,platform=None):
     else:
         return res
 
-def setReference(object, reference, value,platform=None):
+def setReference(objectID, reference, value,platform=None):
     """Set a reference of a wwise object
 
-    :param object: GUID of the object
+    :param objectID: GUID of the object
     :param reference: Name of the reference to set
     :param value: The value to set for given property
     :param platform: Optional. The platform to apply the reference for
@@ -278,7 +278,7 @@ def setReference(object, reference, value,platform=None):
 
     """
     setArgs = {
-        "object": object,
+        "object": objectID,
         "reference": reference,
         "value": value
     }
@@ -292,16 +292,16 @@ def setReference(object, reference, value,platform=None):
     else:
         return res
 
-def setNotes(object, value):
+def setNotes(objectID, value):
     """Set the notes of object to value
 
-    :param object: GUID of the object
+    :param objectID: GUID of the object
     :param value: String to set as notes
     :return: Result structure or False
 
     """
     setPropertyArgs = {
-        "object": object,
+        "object": objectID,
         "value": value
     }
     try:
@@ -367,14 +367,14 @@ def setupImportArgs(parentID, fileList,originalsPath,language="SFX"):
     return importArgs
 
 
-def deleteWwiseObject(object):
+def deleteWwiseObject(objectID):
     """Delete a wwise object
 
     :param object: GUID of object to be deleted
     :return: Result structure or False
 
     """
-    args = {"object":object}
+    args = {"object":objectID}
     try:
         res = client.call("ak.wwise.core.object.delete",args)
     except Exception as ex:
@@ -410,13 +410,13 @@ def getSelectedObjects(properties=[]):
         else:
             return []
 
-def getDescendantObjectsOfType(fromObject,ofType,returnProperties=[],tfrom="id",select="descendants"):
+def getDescendantObjectsOfType(objectID,ofType,returnProperties=[],tfrom="id",select="descendants"):
     """Perform a search fromObject to find descendants ofType, return additional properties for each object.
     Optionally change the from and select parts of the query, by default use ID as the object
     for more info on options see Wwise SDK for ak.wwise.core.object.get
     https://www.audiokinetic.com/library/edge/?source=SDK&id=ak_wwise_core_object_get.html
 
-    :param fromObject: Starting point of search. Default is a GUID
+    :param objectID: Starting point of search. Default is a GUID
     :param ofType: Type of wwise objects to search for
     :param returnProperties: Additional properties to return for each object
     :param tfrom: Key that determines how fromObject is used in the search (default=id)
@@ -426,7 +426,7 @@ def getDescendantObjectsOfType(fromObject,ofType,returnProperties=[],tfrom="id",
     """
     baseProperties = ["id","type", "name", "path"]
     arguments = {
-        "from": {tfrom: [fromObject]},
+        "from": {tfrom: [objectID]},
         "transform": [
             {"select": [select]},
             {"where":["type:isIn",[ofType]]}
@@ -446,11 +446,11 @@ def getDescendantObjectsOfType(fromObject,ofType,returnProperties=[],tfrom="id",
         else:
             return []
 
-def getDescendantObjects(fromObject,returnProperties=[],tfrom="id",select="descendants"):
+def getDescendantObjects(objectID,returnProperties=[],tfrom="id",select="descendants"):
     """Perform a search fromObject to find all descendants, return additional properties for each object.
     Optionally change the from and select parts of the query, by default use ID as the object
 
-    :param fromObject: Starting point of search.
+    :param objectID: Starting point of search.
     :param returnProperties: Additional properties to return for each object
     :param tfrom: Key that determines how fromObject is used in the search (default=id)
     :param select: Key that determines which objects are searched in relation to the fromObject (default=descendants)
@@ -462,7 +462,7 @@ def getDescendantObjects(fromObject,returnProperties=[],tfrom="id",select="desce
     """
     baseProperties = ["id","type", "name", "path"]
     arguments = {
-        "from": {tfrom: [fromObject]},
+        "from": {tfrom: [objectID]},
         "transform": [
             {"select": [select]}
         ],
@@ -546,10 +546,10 @@ def searchForObject(searchterm,returnProperties=[],tfrom="search"):
         else:
             return []
 
-def getObjectProperties(fromObject,returnProperties=[],tfrom="id"):
+def getObjectProperties(objectID,returnProperties=[],tfrom="id"):
     """Get some additional properties from a wwise Object, by default use ID as the object
 
-    :param fromObject: Wwise object to get properties from. Default is a GUID
+    :param objectID: Wwise object to get properties from. Default is a GUID
     :param returnProperties: Additional properties to return for each object
     :param tfrom: Key that determines how fromObject is used in the search (default=id)
     :return: Result structure or False
@@ -559,7 +559,7 @@ def getObjectProperties(fromObject,returnProperties=[],tfrom="id"):
     """
     baseProperties = ["id","type", "name", "path"]
     arguments = {
-        "from": {tfrom: [fromObject]},
+        "from": {tfrom: [objectID]},
         "transform": [],
         "options": {
             "return": baseProperties+returnProperties
@@ -714,7 +714,7 @@ def generateSoundbanks(banklist = []):
     else:
         return res
 
-def getSoundbanks(tfrom,obj):
+def getSoundbanks(objectID,tfrom="id"):
     """ Return all Soundbanks referencing any object of the Work Unit directly
 
     :param tfrom: Key that determines how obj is used in the search (default=id)
@@ -724,7 +724,7 @@ def getSoundbanks(tfrom,obj):
     BankList =[]
     for transform in soundbank_helper.bankTransforms:
         arguments = {
-            "from": {tfrom: [obj]},
+            "from": {tfrom: [objectID]},
             "transform": transform,
             "options": {
                 "return": ['id', 'name', 'type']
@@ -839,7 +839,7 @@ def removeSwitchContainerAssignment(switch,child):
     else:
         return res
 
-def moveWwiseObject(object,parent, conflict="replace"):
+def moveWwiseObject(objectID,parent, conflict="replace"):
     """move object to new location under parent
 
     :param object: ID of wwise object to move
@@ -850,7 +850,7 @@ def moveWwiseObject(object,parent, conflict="replace"):
     """
     args = {
 
-        "object": object,
+        "object": objectID,
         "parent": parent,
         "onNameConflict": conflict
     }
@@ -862,7 +862,7 @@ def moveWwiseObject(object,parent, conflict="replace"):
     else:
         return res
 
-def renameWwiseObject(object,newName):
+def renameWwiseObject(objectID,newName):
     """Rename a given object with newName
 
     :param object: ID of wwise object to rename
@@ -872,7 +872,7 @@ def renameWwiseObject(object,newName):
     """
     args = {
 
-        "object": object,
+        "object": objectID,
         "value": newName
     }
     try:
@@ -883,7 +883,7 @@ def renameWwiseObject(object,newName):
     else:
         return res
 
-def copyWwiseObject(object, parent, conflict="replace"):
+def copyWwiseObject(objectID, parent, conflict="replace"):
     """copy object to new location under parent
     
     :param object: ID of wwise object to copy
@@ -893,7 +893,7 @@ def copyWwiseObject(object, parent, conflict="replace"):
     """
     args = {
 
-        "object": object,
+        "object": objectID,
         "parent": parent,
         "onNameConflict": conflict
     }
