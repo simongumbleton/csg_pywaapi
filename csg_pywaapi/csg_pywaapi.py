@@ -717,8 +717,8 @@ def generateSoundbanks(banklist = []):
 def getSoundbanks(objectID,tfrom="id"):
     """ Return all Soundbanks referencing any object of the Work Unit directly
 
+    :param objectID: The object GUID to use in the search
     :param tfrom: Key that determines how obj is used in the search (default=id)
-    :param obj: The object to use in the search
     :return: List of banks directly referencing obj
     """
     BankList =[]
