@@ -267,6 +267,30 @@ def setProperty(objectID, property, value,platform=None):
     else:
         return res
 
+def setPropertyPerPlatform(object, property, value, platform):
+    """Set a property of a wwise object
+
+    :param object: GUID of the object
+    :param property: Name of the property to set
+    :param value: The value to set for given property
+    :param platform: The platform to apply this property to
+    :return: Result structure or False
+
+    """
+    setPropertyArgs = {
+        "object": object,
+        "property": property,
+        "value": value,
+        "platform": platform
+    }
+    try:
+        res = client.call("ak.wwise.core.object.setProperty",setPropertyArgs)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+        return False
+    else:
+        return res
+
 def setReference(objectID, reference, value,platform=None):
     """Set a reference of a wwise object
 
