@@ -5,6 +5,7 @@ from tkinter import *
 import time
 
 
+
 def messageBox(message,title=""):
     root = tkinter.Tk()
     root.withdraw()
@@ -24,6 +25,7 @@ def showMessageforXseconds(message,timer):
     top.after(timer*1000, top.destroy)
     root.update()
     time.sleep(timer)
+    root.destroy()
     return True
 
 
