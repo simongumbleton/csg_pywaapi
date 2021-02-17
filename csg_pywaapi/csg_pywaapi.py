@@ -775,12 +775,19 @@ def executeCommand(command,objects = []):
     :param objects: List of objects to pass to the command
     :return: Result structure or False
     """
-    args = {
-        "command": command,
-        "objects": [
-            objects
-        ]
-    }
+    args = {}
+    if type(objects) is list:
+        args = {
+            "command": command,
+            "objects": objects
+        }
+    else:
+        args = {
+            "command": command,
+            "objects": [
+                objects
+            ]
+        }
     try:
         res = client.call("ak.wwise.ui.commands.execute", args)
     except Exception as ex:
