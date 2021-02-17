@@ -832,6 +832,20 @@ def cleanfilePathFromWwise(path):
     cleanMacpath = path.replace("Y:","~").replace('\\', '/')
     return os.path.abspath(os.path.expanduser(cleanMacpath))
 
+def showObjectsInListView(objects = []):
+    """Open the provided list of objects in the Wwise List View
+
+    :param objects: A List of object IDs, paths or type qualified names
+    :return: Result structure or False
+    """
+    try:
+        res = executeCommand("ShowListView",objects)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+        return False
+    else:
+        return res
+
 def setSwitchContainerAssignment(switch,child):
     """Assign a given child object to a given switch (switch container)
 
