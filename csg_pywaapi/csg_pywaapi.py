@@ -158,7 +158,7 @@ def getProjectInfo(additionalProperties=[]):
         print("call error: {}".format(ex))
         return False
     else:
-        if len(res["return"]) > 0:
+        if res != None and len(res["return"]) > 0:
             return res["return"][0]
         else:
             return False
@@ -182,10 +182,13 @@ def getLanguages():
         print("call error: {}".format(ex))
         return False
     else:
-        for lang in res["return"]:
-            if lang['name'] != 'SFX' and lang['name'] != 'External' and lang['name'] != 'Mixed':
-                langlist.append(lang['name'])
-        return langlist
+        if res != None:
+            for lang in res["return"]:
+                if lang['name'] != 'SFX' and lang['name'] != 'External' and lang['name'] != 'Mixed':
+                    langlist.append(lang['name'])
+            return langlist
+        else:
+            return []
 
 def getPathToWwiseProjectFolder():
     """Gets a path to the root folder of wwise project, cleans any nonsense from Mac paths.
@@ -760,11 +763,14 @@ def getSoundbanks(objectID,tfrom="id"):
             print("call error: {}".format(ex))
             return False
         else:
-            # print (res.kwresults["return"])
-            for bank in res["return"]:
-                if bank["name"] not in BankList:
-                    BankList.append((bank["name"]))
-    return BankList
+            if res != None:
+                # print (res.kwresults["return"])
+                for bank in res["return"]:
+                    if bank["name"] not in BankList:
+                        BankList.append((bank["name"]))
+                return BankList
+            else:
+                return []
 
 
 def executeCommand(command,objects = []):
