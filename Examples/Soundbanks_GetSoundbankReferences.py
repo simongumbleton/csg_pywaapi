@@ -43,7 +43,7 @@ BankObjectRefs = {}
 ## Do some opertation on each object that was passed in
 for id in ids:
     SelectedObject = csg_pywaapi.getObjectProperties(id)
-    SelectedObjectBanks = csg_pywaapi.getSoundbanks("id", SelectedObject["id"])
+    SelectedObjectBanks = csg_pywaapi.getSoundbanks(SelectedObject["id"])
     if SelectedObjectBanks:
         BankObjectRefs[SelectedObject["name"]] = SelectedObjectBanks
     else:
