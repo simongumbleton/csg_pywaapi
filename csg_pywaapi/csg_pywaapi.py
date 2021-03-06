@@ -768,9 +768,7 @@ def getSoundbanks(objectID,tfrom="id"):
                 for bank in res["return"]:
                     if bank["name"] not in BankList:
                         BankList.append((bank["name"]))
-                return BankList
-            else:
-                return []
+    return BankList
 
 
 def executeCommand(command,objects = []):
