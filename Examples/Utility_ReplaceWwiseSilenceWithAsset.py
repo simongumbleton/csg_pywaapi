@@ -13,7 +13,7 @@ It demonstrates finding objects by type, filtering based on properties, deleting
 ### Debug\UtilitySignals_SilenceMono_01.wav  - file in originals to replace
 
 #Connect to Wwise
-result = csg_pywaapi.connect(8095)
+result = csg_pywaapi.connect(8080)
 if not result:
     exit()
 

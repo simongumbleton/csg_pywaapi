@@ -3,6 +3,12 @@ import sys
 import csg_helpers.gui as gui
 from pprint import pprint
 
+"""
+This script finds and displays any soundbanks that directly reference a given wwise object(s).
+It will find direct references for the object and any ancestors in any soundbank
+It does this by looking at direct inclusions as well as event action references
+It demonstrates using the getSoundbanks() method and the gui helper to display results
+"""
 
 def showSoundbankRefResults(itembankrefs):
     message = ""
@@ -15,16 +21,13 @@ def showSoundbankRefResults(itembankrefs):
         else:
             message += "{0} is not directly referenced in any soundbank".format(key) + "\n"
     gui.messageBox(message,"Soundbank References")
-    #gui.showMessageforXseconds(message,5)
 
 
 #Connect to Wwise
-result = csg_pywaapi.connect()
+result = csg_pywaapi.connect(8080)
 if not result:
     exit()
 
-#Setup an undo group
-csg_pywaapi.beginUndoGroup()
 
 #If run from cmd/bat/wwise then usually IDs will be passed into the args
 ids = []
@@ -54,11 +57,9 @@ for id in ids:
 showSoundbankRefResults(BankObjectRefs)
 #pprint(BankObjectRefs)
 
-# Close the undo groupr
-csg_pywaapi.endUndoGroup("MyUndoGroup")
 
 ##### Pause the script to display results ###### 
-#input('Press <ENTER> to continue')
+input('Press <ENTER> to continue')
 
 # Exit
 csg_pywaapi.exit()

@@ -26,7 +26,7 @@ def cleanfilePathFromWwise(path):
 
 ###########  Do Some Cool stuff here ##############
 #Connect to Wwise
-result = csg_pywaapi.connect()
+result = csg_pywaapi.connect(8080)
 if not result:
     exit()
 

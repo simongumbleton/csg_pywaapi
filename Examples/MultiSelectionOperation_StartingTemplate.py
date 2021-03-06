@@ -1,16 +1,18 @@
 import csg_pywaapi
 import sys
-from pprint import pprint
 
+"""
+This script demonstrates doing operations on multiple wwise objects passed in with sys.argv, 
+or alternatively multiple currently selected wwise objects.
+For each ID it gets some named properties and prints them
+"""
 
 
 #Connect to Wwise
-result = csg_pywaapi.connect()
+result = csg_pywaapi.connect(8080)
 if not result:
     exit()
 
-#Setup an undo group
-csg_pywaapi.beginUndoGroup()
 
 #If run from cmd/bat/wwise then usually IDs will be passed into the args
 ids = []
@@ -27,13 +29,11 @@ if not ids:
 
 ## Do some opertation on each object that was passed in
 for id in ids:
-    print("This is where you do your operations on each object")
+    # This is where you do your operations on each object
+    # get some named properties from the given ID
+    objectWithProperties = csg_pywaapi.getObjectProperties(id,["name","type"])
+    print("Object {0} is a {1}".format(objectWithProperties["name"],objectWithProperties["type"]))
 
-
-
-
-# Close the undo groupr
-csg_pywaapi.endUndoGroup("MyUndoGroup")
 
 ##### Pause the script to display results ###### 
 input('Press <ENTER> to continue')

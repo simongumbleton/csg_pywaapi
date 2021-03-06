@@ -46,7 +46,7 @@ def EventCreateArgs(parentID, fname, enterExit):
 ############## End of Function definitions ##############################################
 
 #Connect to Wwise
-result = csg_pywaapi.connect(8095)
+result = csg_pywaapi.connect(8080)
 if not result:
     exit()
 
