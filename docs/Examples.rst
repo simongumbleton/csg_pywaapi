@@ -62,7 +62,7 @@ This example demonstrates importing a list of new audio files into wwise under t
 ***************
 Going Further
 ***************
-A selection of example scripts can be found on the `csg_pywaapi github <https://github.com/simongumbleton/csg_pywaapi/tree/master/Examples>`, demonstrating use of the module in a few more advanced, real world scenarios
-
+A selection of example scripts can be found on the csg_pywaapi github, demonstrating use of the module in a few more advanced, real world scenarios
+https://github.com/simongumbleton/csg_pywaapi/tree/master/Examples
 
 
