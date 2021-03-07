@@ -5,61 +5,46 @@ import sys
 import os
 from pprint import pprint
 
+"""
+This script imports audio files as voice in the default language and creates play events.
+Given a directory (or multiple dirs passed via sys.argv) we find all the wav files under that root.
+For each file we find, create some paths based on the folder structure for the actor mixer and event hierarchies.
+Then import the wav file under the generated path and create a Play event for it.
 
-SectionName = "NewSection"
-SubsectionName = "NewSubSection"
-CharacterName = "NewCharacter"
+This script demonstrates importing audio files, creating wwise objects from string paths, use of the Files helper
+"""
 
+#shorthands for object types for path creation
 WU = "<WorkUnit>"
 AM = "<ActorMixer>"
 FD = "<Folder>"
 
-ActorMixerStructure = (
-        WU + SectionName + "\\"
-        + AM + SectionName + "\\"
-        + AM + SubsectionName + "\\"
-        + AM + CharacterName + "\\"
-)
-
-EventStructure = (
-        WU + SectionName + "\\"
-        + FD + SubsectionName + "\\"
-)
-
-OriginalsStructure = (
-        SectionName + os.sep
-        + SubsectionName + os.sep
-        + CharacterName + os.sep
-)
-
-def LAMS_GetDataForVOLine(VOline):
-    lineData = {}
-    lineData["line"] = VOline
-    lineData["filepath"] = "" #GetfilepathFromLAMS(VOline)
-    lineData["section"] = "MySection" #GetSectionFromLAMS(VOline)
-    lineData["subsection"] = "MySubsection" #GetSubsectionFromLAMS(VOline)
-    lineData["character"] = "MyCharacter" #GetCharacterFromLAMS(VOline)
-
-
-
-def getObjectImportPath(relDir,filename):
+#Funtions to generate a wwise object path from a relative directory path
+def getObjectImportPath(relDir):
     dirSteps = str.split(relDir, os.sep)
-    #objectPath = "\\Actor-Mixer Hierarchy\\"
     objectPath = WU + dirSteps[0] + "\\"
     for dir in dirSteps:
+        if dir == '':
+            continue
         objectPath += AM + dir + "\\"
-    #objectPath += "<Sound Voice>" + filename
     return  objectPath
 
-def getEventImportPath(relDir,filename):
+def getEventImportPath(relDir):
     dirSteps = str.split(relDir, os.sep)
-    #objectPath = "\\Events\\"
     objectPath = WU + dirSteps[0] + "\\"
-    #objectPath = ""
-    for dir in dirSteps[1:]:
+    for dir in dirSteps:
+        if dir == '':
+            continue
         objectPath += FD + dir + "\\"
-    #objectPath += filename + "@Play"
     return  objectPath
+
+#Pause if errors to display log
+def handleError():
+    print("Error! Check log for details")
+    ##### Pause the script to display results ######
+    input('Press <ENTER> to continue')
+    csg_pywaapi.exit()
+    exit()
 
 
 # Connect to Wwise
@@ -67,42 +52,40 @@ result = csg_pywaapi.connect()
 if not result:
     exit()
 
-
-
 projectInfo = csg_pywaapi.getProjectInfo()
 if not projectInfo:
     print("Could not get project info, is wwise project open?")
     csg_pywaapi.exit()
     exit()
-
+#Get the default language and path to project
 defaultLanguage = projectInfo["@DefaultLanguage"]
 pathToWwiseDir = csg_pywaapi.getPathToWwiseProjectFolder()
-projectlanguages = csg_pywaapi.getLanguages()
-projectlanguages.remove(projectInfo["@DefaultLanguage"])
-res = csg_pywaapi.getSelectedObjects()
-
 
 # Setup an undo group
 csg_pywaapi.beginUndoGroup()
 
-# If run from cmd/bat/wwise then usually IDs will be passed into the args
+# If run from cmd/bat/wwise then a list of directories can be passed in
 dirs = []
 if (len(sys.argv) > 1):
     sysargs = set(sys.argv[1:])
     for arg in sysargs:
         dirs.append(arg)
 
-# if no args are given, then get the currently selected objects instead
+# if no args are given, then ask the user for a directory
 if not dirs:
     res = gui.askUserForDirectory()
+    if not res:
+        print("No directly selected..Exiting")
+        csg_pywaapi.exit()
+        exit()
     dirs.append(res)
-
 
 
 ## Do some opertation on each object that was passed in
 for dir in dirs:
     directory = os.path.abspath(dir)
     filesToImport = Files.setupSourceFileList(directory)
+    dirName = os.path.basename(directory)
     print(filesToImport)
 
     importFilelist = []
@@ -112,12 +95,20 @@ for dir in dirs:
         audiofilename = os.path.basename(audiofilepath)
         relativepath = os.path.relpath(audiofilepath, directory)
         relativeDir = os.path.dirname(relativepath)
+        if relativeDir == '': #If the files were in the root then relative dir is empty, so use the root dir
+            relativeDir = dirName
 
-        AMpath = getObjectImportPath(relativeDir,audiofilename)
+        AMpath = getObjectImportPath(relativeDir)
         AMobj = csg_pywaapi.createStructureFromPath(AMpath,"\\Actor-Mixer Hierarchy")
+        if not AMobj:
+            print("Failed to create object: {0}".format(AMpath))
+            handleError()
         AMobj = csg_pywaapi.getObjectProperties(AMobj["id"],["path"])
-        Evpath = getEventImportPath(relativeDir,audiofilename)
+        Evpath = getEventImportPath(relativeDir)
         EvObj = csg_pywaapi.createStructureFromPath(Evpath,"\\Events")
+        if not EvObj:
+            print("Failed to create object: {0}".format(Evpath))
+            handleError()
         EvObj = csg_pywaapi.getObjectProperties(EvObj["id"], ["path"])
 
         importFilelist.append(
@@ -137,16 +128,16 @@ for dir in dirs:
         },
         "imports": importFilelist
     }
-
     res = csg_pywaapi.importAudioFiles(importArgs)
 
-    print(res)
-
-
-
+csg_pywaapi.saveWwiseProject()
 
 # Close the undo groupr
-csg_pywaapi.endUndoGroup("Auto Import Dialogue")
+try:
+    csg_pywaapi.endUndoGroup("Auto Import Dialogue")
+except Exception as ex:
+    print("close undo group error: {}".format(ex))
+    csg_pywaapi.cancelUndoGroup()
 
 ##### Pause the script to display results ######
 # input('Press <ENTER> to continue')
