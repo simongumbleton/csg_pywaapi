@@ -3,6 +3,16 @@ import sys
 import os
 from pprint import pprint
 
+"""
+This script auto localises a given wwise structure. 
+That is, for any voice files under the parent, it tries to find
+the localised version of the audio file (by using the project languages to search the Originals folder)
+and any that are found are imported as the language source for the audio file.
+Basically, this script does the same process as the Wwise "localise languages" mode of the import GUI
+But this script does all languages at once (instead of one at a time like the gui)
+
+It demonstrates getting global project info such as languages, finding objects of type and filtering using specific properties
+"""
 
 def setupArgsForLoc(path, id, wavFile, language):
     importFilelist = []
@@ -25,7 +35,7 @@ def setupArgsForLoc(path, id, wavFile, language):
     return importArgs
 
 #Connect to Wwise
-result = csg_pywaapi.connect()
+result = csg_pywaapi.connect(8080)
 if not result:
     exit()
 
