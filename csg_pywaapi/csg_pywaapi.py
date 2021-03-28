@@ -12,6 +12,22 @@ import operator
 client = None
 
 
+EventActionIDs = {
+#https://www.audiokinetic.com/fr/library/edge/?source=SDK&id=wwiseobject_action.html
+    "Play":1,
+    "Stop":2,
+    "StopAll":3,
+    "Pause":7,
+    "PauseAll":8,
+    "Resume":9,
+    "ResumeAll":10,
+    "Break":34,
+    "Seek":36,
+    "SeekAll":37,
+    "PostEvent":41
+}
+
+
 
 def connect(port=8095):
     """ Connect to Wwise authoring api , on default port 8095 or an alternative port.
@@ -237,6 +253,71 @@ def createWwiseObjectFromArgs(args = {}):
     :return: The newly created wwise object(s) or False
 
     """
+    try:
+        res = client.call("ak.wwise.core.object.create", args)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+        return False
+    else:
+        return res
+
+def createEventForObject(objectID,EventParent,action="Play",eventName=""):
+    """Create an event targeting a given object,
+    with overloaded arguments for event name and action.
+
+    :param objectID: The GUID of the object to be targeted by the event
+    :param EventParent: A GUID or path of an object to be the parent of the new event. If a path which doesnt exist it will be created
+
+    :param action: Named argument. The action type of the event. Defaults to Play
+    :param eventName: Named argument. The name of the event. If not provided, the event will be named based on the action + object name
+    :return: The newly created wwise object(s) or False
+
+    """
+
+    if not objectID or not EventParent:
+        print("Error: Missing required argument(s)")
+        return False
+
+    isParentID = isStringValidID(EventParent)
+    targetObject = getObjectProperties(objectID)
+    parentObject = None
+    if isParentID:
+        parentObject = getObjectProperties(EventParent)
+    else:
+        if "\\Events" in EventParent:
+            EventParent = str.lstrip(EventParent,"\\Events")
+        elif "Events" in EventParent:
+            EventParent = str.lstrip(EventParent,"Events")
+        parentObject = createStructureFromPath(EventParent,"\\Events")
+
+    Name = ""
+    if eventName == "":
+        Name = action + "_" + targetObject["name"]
+    else:
+        Name = eventName
+
+
+    actiontype = EventActionIDs.get(action)
+    if not actiontype:
+        print("Error: Unsupported action argument: "+action)
+        return False
+
+    args = {
+        "parent":parentObject["id"],
+        "type":"Event",
+        "name":Name,
+        "onNameConflict":"merge",
+        "children":[
+            {
+                "name":"",
+                "type":"Action",
+                "@ActionType":actiontype,
+                "@Target":targetObject["id"]
+            }
+        ]
+
+    }
+
     try:
         res = client.call("ak.wwise.core.object.create", args)
     except Exception as ex:
