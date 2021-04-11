@@ -1050,14 +1050,18 @@ def isStringValidID(string):
         return False
 
 def createStructureFromPath(path,parent):
-    r"""Create a structure of objects from a string path
+    r"""Create a structure of objects from a string path and return the last object in the path. If the path already exists, no new objects are created, and the existing last object in the path is returned.
 
-    :param path: String path of the structure to be created. Objects should be seperated by double backslash (\\) and type should prefix name in angle brackets <> e.g <WorkUnit>MyWorkUnit
-    :param parent: ID or path of the parent object to create the structure under e.g. \\\\Actor-Mixer Hierarchy
+    :param path: String path of the structure to be created. Objects should be seperated by double backslash (\\\\\\\\) and type should prefix name in angle brackets <> e.g <WorkUnit>MyWorkUnit
+    :param parent: ID or path of the parent object to create the structure under e.g. \\\\\\\\Actor-Mixer Hierarchy
     :return: The last descendent object in the path created
 
-    e.g. res = csg_pywaapi.createStructureFromPath("<WorkUnit>Hello\\\\<Folder>World", "\\\\Actor-Mixer Hierarchy")
+    e.g. res = csg_pywaapi.createStructureFromPath("<WorkUnit>Hello\\\\\\\\<Folder>World", "\\\\\\\\Actor-Mixer Hierarchy")
     """
+    
+    #Above docstring needs so many backslashes for RST documentation display.. In python you should make sure to use double backslash (\\)
+    # res = csg_pywaapi.createStructureFromPath("<WorkUnit>Hello\\<Folder>World", "\\Actor-Mixer Hierarchy")
+    
     if not parent or not path:
         print("Error. Missing arguments")
         return False
