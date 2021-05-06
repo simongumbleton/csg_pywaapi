@@ -1,12 +1,14 @@
 import sys
 import os
 import re
+import math
 
 sys.path.append('..')
 
 from waapi import WaapiClient
 from pprint import pprint
 from csg_helpers import soundbank_helper
+from csg_helpers import Files
 import operator
 
 client = None
@@ -434,6 +436,40 @@ def importAudioFiles(args):
         return False
     else:
         return res
+
+def importAudioFilesBatched(args,size = 100):
+    """Import audio files with custom args. Splits large import jobs into batches of *size* (waapi has issues parsing large import jobs)
+
+    :param args: A map of custom arguments for ak.wwise.core.audio.import
+    :param size: size of the batches to import (defaults to 100)
+    :return: Result structure or False
+
+    """
+    results = ""
+    importList = args["imports"]
+    count = len(importList)
+    div = count / size
+
+    for batch in Files.splitListIntoNchunks(importList, math.ceil(div)):
+
+        args["imports"] = batch
+
+        try:
+            res = client.call("ak.wwise.core.audio.import", args)
+        except Exception as ex:
+            print("call error: {}".format(ex))
+            return False
+        else:
+            if results == "":
+                results = res
+            else:
+                if "objects" in res and "objects" in results:
+                    existing = results["objects"]
+                    new = res["objects"]
+                    combined = existing + new
+                    results["objects"] = combined
+
+    return results
 
 def setupImportArgs(parentID, fileList,originalsPath,language="SFX"):
     """Helper function to construct args for import operation

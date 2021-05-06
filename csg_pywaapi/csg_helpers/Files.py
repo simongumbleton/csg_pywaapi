@@ -24,3 +24,8 @@ def filterSourceFileList(sourcefilelist, filterTerms):
             filteredFileList.append(os.path.basename(file))
             # print(file)
     return filteredFileList
+
+def splitListIntoNchunks(l, n):
+    """Yield n number of striped chunks from l."""
+    for i in range(0, n):
+        yield l[i::n]
