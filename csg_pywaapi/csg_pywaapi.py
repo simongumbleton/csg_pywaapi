@@ -1106,13 +1106,32 @@ def createStructureFromPath(path,parent):
     isParentID = isStringValidID(parent)
     if not isParentID:
         #the parent param was not an ID, lets try to find it in the wwise project
+        if parent == "Actor-Mixer Hierarchy":
+            parent = "\\"+parent
+        elif parent == "Events":
+            parent = "\\"+parent
+
         results = searchForObject(parent,[],"path")
         numOfResults = len(results)
         if numOfResults == 1:
-            nextParent = results[0]["id"]
+            nextParentID = results[0]["id"]
         elif numOfResults == 0:
-            print("Could not locate parent in wwise project. Arg given = "+parent)
-            return False
+            print("Could not locate parent in wwise project. Attempting to create. Arg given = "+parent)
+            if "Actor-Mixer Hierarchy" in parent:
+                p = parent.partition("Actor-Mixer Hierarchy")[2]
+                res = createStructureFromPath(p,"\\Actor-Mixer Hierarchy")
+                if not res:
+                    print("Error creating parent object")
+                    return False
+                nextParentID = res["id"]
+            elif "Events" in parent:
+                p = parent.partition("Events")[2]
+                res = createStructureFromPath(p, "\\Events")
+                if not res:
+                    print("Error creating parent object")
+                    return False
+                nextParentID = res["id"]
+
         elif numOfResults > 1:
             print("Ambiguous parent argument. More than one possible parent found using arg: "+parent)
             print("Consider refining the argument or passing an explicit ID instead")
@@ -1120,7 +1139,7 @@ def createStructureFromPath(path,parent):
     else:
         result = searchForObject(parent,[],"id")
         if result:
-            nextParent = parent
+            nextParentID = parent
         else:
             print("Error. Cannot find an object with matching ID from parent argument")
             return False
@@ -1144,18 +1163,18 @@ def createStructureFromPath(path,parent):
             name = node
 
         # check if there is already a child with the name under the parent
-        res = getDescendantObjects(nextParent,[],"id","children")
+        res = getDescendantObjects(nextParentID,[],"id","children")
         for item in res:
             if item["name"] == name:
                 #node already exists in wwise
-                nextParent = item["id"]
+                nextParentID = item["id"]
                 lastChild = item
                 break
         else:
             if type:    #node contains a type, and we didn't find an existing item so we try to create it
-                res = createWwiseObject(nextParent,type,name)
+                res = createWwiseObject(nextParentID,type,name)
                 if res:
-                    nextParent = res["id"]
+                    nextParentID = res["id"]
                     lastChild = res
                 else:   #object was not created
                     print("Error! Could not create object and found no existing object named "+name+" underneath " + parent)
