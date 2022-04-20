@@ -272,7 +272,7 @@ def createEventForObject(objectID,EventParent,action="Play",eventName="",conflic
 
     :param action: Named argument. The action type of the event. Defaults to Play
     :param eventName: Named argument. The name of the event. If not provided, the event will be named based on the action + object name
-    :param conflictmode: Named argument.
+    :param conflictmode: Named argument. What to do in the event of a name conflict
     :return: The newly created wwise object(s) or False
 
     """
