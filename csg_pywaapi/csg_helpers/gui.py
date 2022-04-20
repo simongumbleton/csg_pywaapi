@@ -29,11 +29,11 @@ def showMessageforXseconds(message,timer):
     return True
 
 
-def askUserForDirectory():
+def askUserForDirectory(message="Choose source directory",startingdir=""):
     root = tkinter.Tk()
     root.withdraw()
     root.update()
-    dir = filedialog.askdirectory(title="Choose source directory")
+    dir = filedialog.askdirectory(title=message,initialdir=startingdir)
     root.update()
     root.destroy()
     return dir
