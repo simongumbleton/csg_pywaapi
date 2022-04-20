@@ -263,7 +263,7 @@ def createWwiseObjectFromArgs(args = {}):
     else:
         return res
 
-def createEventForObject(objectID,EventParent,action="Play",eventName=""):
+def createEventForObject(objectID,EventParent,action="Play",eventName="",conflictmode="merge"):
     """Create an event targeting a given object,
     with overloaded arguments for event name and action.
 
@@ -272,6 +272,7 @@ def createEventForObject(objectID,EventParent,action="Play",eventName=""):
 
     :param action: Named argument. The action type of the event. Defaults to Play
     :param eventName: Named argument. The name of the event. If not provided, the event will be named based on the action + object name
+    :param conflictmode: Named argument.
     :return: The newly created wwise object(s) or False
 
     """
@@ -308,7 +309,7 @@ def createEventForObject(objectID,EventParent,action="Play",eventName=""):
         "parent":parentObject["id"],
         "type":"Event",
         "name":Name,
-        "onNameConflict":"merge",
+        "onNameConflict":conflictmode,
         "children":[
             {
                 "name":"",
