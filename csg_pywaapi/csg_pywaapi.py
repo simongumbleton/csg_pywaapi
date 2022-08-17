@@ -10,6 +10,7 @@ from pprint import pprint
 from csg_helpers import soundbank_helper
 from csg_helpers import Files
 import operator
+from csg_helpers import wwise_settings
 
 client = None
 
@@ -29,16 +30,23 @@ EventActionIDs = {
     "PostEvent":41
 }
 
+def getWwiseUserSetting_WAMPport():
+    return wwise_settings.get_wamp_port()
 
-
-def connect(port=8095):
-    """ Connect to Wwise authoring api , on default port 8095 or an alternative port.
+def connect(port = None):
+    """ Connect to Wwise authoring api , on the port provided. If port is left empty, we try to read the port set in the user preferences settings file.
+    If port is empty and the user settings file cannot be read, default port to use is 8080
     This sets up the client used for all future calls in the same session, so should be called before any other functions
 
-    :param port: The waapi port to use (default 8095)
+    :param port: The waapi port to use (default is 8080 if not provided, and user settings cannot be read)
     :return: wwise connection info structure OR False
 
     """
+    if not port:
+        port = getWwiseUserSetting_WAMPport()
+        if not port:
+            port = 8080
+
     global client
     try:
         client = WaapiClient(url="ws://127.0.0.1:{0}/waapi".format(port))
