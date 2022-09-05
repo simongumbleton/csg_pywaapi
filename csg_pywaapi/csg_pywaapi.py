@@ -1102,6 +1102,9 @@ def createStructureFromPath(path,parent):
     :return: The last descendent object in the path created
 
     e.g. res = csg_pywaapi.createStructureFromPath("<WorkUnit>Hello\\\\\\\\<Folder>World", "\\\\\\\\Actor-Mixer Hierarchy")
+
+    If no types are provided, and elements of the path do not exist already, then default types will be used.
+    Default types are first Folder then WorkUnit. If a Folder cannot be created at the given location (usually because there is no work unit in the path), then a Work Unit will be created.
     """
     
     #Above docstring needs so many backslashes for RST documentation display.. In python you should make sure to use double backslash (\\)
@@ -1111,6 +1114,14 @@ def createStructureFromPath(path,parent):
         print("Error. Missing arguments")
         return False
 
+    if path.startswith("\\Events\\"):
+        path = path.replace("\\Events\\","\\",1)
+    elif path.startswith("Events\\"):
+        path = path.replace("Events\\", "\\",1)
+    elif path.startswith("\\Actor-Mixer Hierarchy\\"):
+        path = path.replace("\\Actor-Mixer Hierarchy\\", "\\",1)
+    elif path.startswith("Actor-Mixer Hierarchy\\"):
+        path = path.replace("Actor-Mixer Hierarchy\\", "\\",1)
 
     isParentID = isStringValidID(parent)
     if not isParentID:
@@ -1189,8 +1200,19 @@ def createStructureFromPath(path,parent):
                     print("Error! Could not create object and found no existing object named "+name+" underneath " + parent)
                     return False
             else:
-                print("Error! Could not create object and found no existing object named "+name+" underneath " + parent)
-                return False
+                #No type was specified, and we didn't find an existing item - so try and create an item with a default type
+                res = createWwiseObject(nextParentID, "Folder", name)
+                if res:
+                    nextParentID = res["id"]
+                    lastChild = res
+                else:  # object was not created as a default Folder, try creating it as a work unit instead
+                    res2 = createWwiseObject(nextParentID, "WorkUnit", name)
+                    if res2:
+                        nextParentID = res2["id"]
+                        lastChild = res2
+                    else:
+                        print("Error! Could not create object and found no existing object named " + name + " underneath " + parent)
+                        return False
 
     if lastChild:
         return lastChild
