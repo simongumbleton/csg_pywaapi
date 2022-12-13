@@ -271,6 +271,95 @@ def createWwiseObjectFromArgs(args = {}):
     else:
         return res
 
+def setWwiseObjectWithArgs(args = {}):
+    """Set or create wwises object from a custom argument structure.
+    Useful if you need to create many complex objects. See ak.wwise.core.object.set in wwise docs
+
+    :param args: A map of custom arguments for ak.wwise.core.object.create
+    :return: The newly created or modified wwise object(s) or False
+
+    """
+    try:
+        res = client.call("ak.wwise.core.object.set", args)
+    except Exception as ex:
+        print("call error: {}".format(ex))
+        return False
+    else:
+        return res
+
+def createControlInputStructForNewModulator(type = "ModulatorTime",name = "New Modulator",AdditionalKeyValueProperties = {}):
+    """Helper function to create a ControlInputStruct for use with setCreateRTPCCurveForObject()
+    See ak.wwise.core.object.set in wwise docs
+
+    :param type: The type of modulator to be created. Possible values: ModulatorLfo, ModulatorEnvelope, ModulatorTime,GameParameter,MidiParameter
+    :param name: The name of the modulator to be created
+    :param AdditionalKeyValueProperties: A dictionary of additional control properties to set for a modulator e.g. for ModulatorTime this might be: {"@TimeModDuration": 5,"@EnvelopeStopPlayback": false}
+
+    :return: The newly created or modified wwise object(s) or False
+
+    """
+    if not type or not name:
+        return {}
+    args = {
+        "type": type,
+        "name": name,
+    }
+    for k,v in AdditionalKeyValueProperties:
+        args[k] = v
+    return args
+
+
+def setCreateRTPCCurveForObject(ObjIDOrPath, PropertyName, ControlInputStructOrID = None, PointsList=None):
+    """Set or create an RTPC curve on an object
+    See ak.wwise.core.object.set in wwise docs
+
+    :param ObjIDOrPath: The ID or path of the object which will have the new RTPC curve
+    :param PropertyName: The name of the property to be controlled (e.g. OutputBusVolume)
+    :param ControlInputStructOrID: A struct defining the control input. Either can be the ID of an existing RTPC curve, or a struct creating a new modulator, filled by createControlInputStructForNewModulator()
+    :param PointsList: List of points for the new curve, in the format [{ "x": 100.0, "y": -20.82785, "shape": "Linear" },{ "x": 10000.0, "y": 21.8509, "shape": "Linear" }]
+    :return: The newly created or modified wwise object(s) or False
+
+    """
+    if PointsList is None:
+        PointsList = [{"x": 0, "y": 0, "shape": "Linear"}, {"x": 100, "y": 0, "shape": "Linear"}]
+    if ControlInputStructOrID is None:
+        ControlInputStructOrID = createControlInputStructForNewModulator()
+    if not ObjIDOrPath or not PropertyName or not ControlInputStructOrID:
+        print("ERROR! One or more missing arguments to setCreateRTPCCurveForObject")
+        return False
+
+    args = {
+        "objects": [
+            {
+                "object": ObjIDOrPath,
+                "@RTPC": [
+                    {
+                        "type": "RTPC",
+                        "name": "",
+                        "@Curve": {
+                            "type": "Curve",
+                            "points": PointsList
+                        },
+                        "@PropertyName": PropertyName,
+                        "@ControlInput": ControlInputStructOrID
+                    }
+                ]
+            }
+        ]
+    }
+    return setWwiseObjectWithArgs(args)
+
+
+def getRTPCCurvesForObject(ObjIDOrPath):
+    if not ObjIDOrPath:
+        return False
+    res = None
+    if isStringValidID(ObjIDOrPath):
+        res = getObjectProperties(ObjIDOrPath,["@RTPC"])
+    else:
+        res = getObjectProperties(ObjIDOrPath, ["@RTPC"],tfrom="path")
+    return res.get("@RTPC",False)
+
 def createEventForObject(objectID,EventParent,action="Play",eventName="",conflictmode="merge"):
     """Create an event targeting a given object,
     with overloaded arguments for event name and action.
