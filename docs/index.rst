@@ -7,10 +7,14 @@ csg_pywaapi
 =======================================
 
 A python library to help extend and automate the Wwise authoring tool.
+
 Warning! csg_pywaapi has been renamed to pss_pywaapi. 
+
 The old csg_pywaapi module will continue to work on exsiting installations, but will no longer be supported going forward.
+
 Please consider updating code and environments to use the new pss_pywaapi module. 
-(https://pss-pywaapi.readthedocs.io/en/latest/index.html#)
+
+(https://pss-pywaapi.readthedocs.io)
 
 Contents:
 
