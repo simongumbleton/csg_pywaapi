@@ -2,6 +2,8 @@ import sys
 import os
 import re
 import math
+import warnings
+warnings.warn("csg-pywaapi module has been renamed to pss-pywaapi. The olde csg-pywaapi will continue to work for existing installs, but consider updating your scripts to use the new pss-pywaapi module", DeprecationWarning)
 
 sys.path.append('..')
 

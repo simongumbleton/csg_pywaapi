@@ -8,8 +8,8 @@ def readme():
 
 setup(
     name="csg_pywaapi",
-    version="1.1.19",
-    description="Helper package for interfacing with Wwise using waapi.",
+    version="1.1.20",
+    description="Helper package for interfacing with Wwise using waapi. csg_pywaapi is no longer support, please use pss-pywaapi instead",
     long_description=readme(),
     long_description_content_type="text/markdown",
     url="https://github.com/simongumbleton/csg_pywaapi",
@@ -24,5 +24,5 @@ setup(
     packages=["csg_helpers"],
     py_modules=['csg_pywaapi'],
     include_package_data=True,
-    install_requires=["waapi_client","PyWave"],
+    install_requires=["waapi_client","PyWave","pss-pywaapi"]
 )

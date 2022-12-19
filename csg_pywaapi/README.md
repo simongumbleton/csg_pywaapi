@@ -1,6 +1,6 @@
 # csg_waapi
 
-Helper package for interfacing with Wwise using waapi.
+Warning! csg-pywaapi has been renamed pss-pywaapi. The older csg-pywaapi module will no longer be supported, please change your code to use the new pss-pywaapi module.
 
 ## Usage
 
